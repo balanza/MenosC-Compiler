@@ -1,0 +1,18 @@
+En este directorio se encuentra:
+
+malpas
+------
+Máquina virtual en modo texto. Se puede ejecutar el código para a  paso con la opción -p:
+./malpas -p c01.c3d
+
+malpas-mac
+----------
+Versión de malpas compilada para Mac OS X (Snow Leopard)
+
+mvirtual
+--------
+Máquina virtual en modo gráfico. Incluye herramientas de ayuda a la depuración del código intermedio.
+
+ManualUsuario_mVirtual.pdf
+--------------------------
+Manual de usuario de la máquina virtual gráfica. No es necesaria su lectura para  usar mVirtual.
