@@ -61,10 +61,7 @@ typedef struct tipo_arg /****** Estructura para los argumentos del codigo 3D */
 /*************************** Variables globales de uso en todo el compilador */
 
 int si;                /* Desplazamiento en el Segmento de Codigo     */
-int old_dvar;              /* Desplazamiento en el Segmento de Variables  */
 int dvar;              /* Desplazamiento en el Segmento de Variables  */
-int dpar;              /* Desplazamiento en el Segmento de Parametros de funcion  */
-int nivel; 			   /* Nivel de anidamiento */
 
 /*************** Funciones para crear los argumentos de las instrucciones 3D */
 TIPO_ARG crArgNulo ();

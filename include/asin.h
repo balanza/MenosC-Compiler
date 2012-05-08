@@ -83,16 +83,21 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 11 "asin.y"
+#line 17 "asin.y"
 
   char* ident;  /* Para los identificadores  */
   int cent;  /* Para constantes enteras */
   int op_rel;
+  struct tipo_def /* Estructura para una descricion de tipo */
+	{
+	  int talla;                            
+	  int tipo;                            
+	} tdef;
 
 
 
 /* Line 1676 of yacc.c  */
-#line 96 "asin.h"
+#line 101 "asin.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

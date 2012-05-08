@@ -15,4 +15,5 @@ int main()
 {                                              
   c=3.56;     //   y contante real, truncar a entera
   c = z * b; 	  // variable no declarada
+  dobxle();
 }

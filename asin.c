@@ -75,9 +75,15 @@
 #include "include/libgci.h"
 extern int yylineno;
 
+/**************** Variables globales **********************/
+int old_dvar;              /* Desplazamiento en el Segmento de Variables  */
+int dpar;              /* Desplazamiento en el Segmento de Parametros de funcion  */
+int nivel; 			   /* Nivel de anidamiento */
+
+
 
 /* Line 189 of yacc.c  */
-#line 81 "asin.c"
+#line 87 "asin.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -148,16 +154,21 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 11 "asin.y"
+#line 17 "asin.y"
 
   char* ident;  /* Para los identificadores  */
   int cent;  /* Para constantes enteras */
   int op_rel;
+  struct tipo_def /* Estructura para una descricion de tipo */
+	{
+	  int talla;                            
+	  int tipo;                            
+	} tdef;
 
 
 
 /* Line 214 of yacc.c  */
-#line 161 "asin.c"
+#line 172 "asin.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -169,7 +180,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 173 "asin.c"
+#line 184 "asin.c"
 
 #ifdef short
 # undef short
@@ -487,15 +498,15 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    26,    26,    26,    37,    38,    40,    41,    43,    50,
-      52,    53,    55,    56,    58,    66,    65,    75,    76,    78,
-      86,    85,    94,    96,    97,    99,   100,   103,   103,   112,
-     113,   114,   115,   116,   118,   119,   121,   122,   124,   126,
-     128,   129,   131,   133,   134,   135,   136,   138,   139,   141,
-     142,   144,   145,   147,   148,   150,   151,   152,   154,   155,
-     156,   157,   158,   159,   169,   171,   172,   174,   175,   177,
-     178,   179,   181,   184,   185,   186,   187,   189,   190,   192,
-     193,   195,   196,   198,   199
+       0,    40,    40,    40,    51,    52,    54,    55,    57,    68,
+      70,    75,    81,    85,    90,    98,    97,   107,   108,   110,
+     118,   117,   126,   128,   129,   131,   132,   135,   135,   144,
+     145,   146,   147,   148,   150,   151,   153,   154,   156,   158,
+     160,   161,   163,   165,   166,   167,   168,   170,   171,   173,
+     174,   176,   177,   179,   180,   182,   183,   184,   186,   187,
+     188,   189,   190,   191,   198,   200,   201,   203,   204,   206,
+     207,   208,   210,   213,   214,   215,   216,   218,   219,   221,
+     222,   224,   225,   227,   228
 };
 #endif
 
@@ -1511,7 +1522,7 @@ yyreduce:
         case 2:
 
 /* Line 1455 of yacc.c  */
-#line 26 "asin.y"
+#line 40 "asin.y"
     {
 		nivel = 0;
 		
@@ -1523,7 +1534,7 @@ yyreduce:
   case 3:
 
 /* Line 1455 of yacc.c  */
-#line 33 "asin.y"
+#line 47 "asin.y"
     {
 		descargaContexto(nivel);
 	;}
@@ -1532,19 +1543,61 @@ yyreduce:
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 44 "asin.y"
+#line 58 "asin.y"
     {
 		printf("\ndeclarando var %s", (yyvsp[(2) - (3)].ident));
-		insertaSimbolo((yyvsp[(2) - (3)].ident), VARIABLE, T_ENTERO, dvar, nivel, -1);
-		dvar += TALLA_ENTERO;
-	
+		if(!insertaSimbolo((yyvsp[(2) - (3)].ident), VARIABLE, (yyvsp[(1) - (3)].tdef).tipo, dvar, nivel, -1)){
+			yyerror("---> identificador repetido");
+		}
+		dvar += (yyvsp[(1) - (3)].tdef).talla; // update shift
+		
+		(yyval.tdef).talla = (yyvsp[(1) - (3)].tdef).talla; // moviendo hacia 
+		(yyval.tdef).tipo = (yyvsp[(1) - (3)].tdef).tipo;   //  arriba los valores
+	;}
+    break;
+
+  case 10:
+
+/* Line 1455 of yacc.c  */
+#line 71 "asin.y"
+    {
+		(yyval.tdef).talla = TALLA_ENTERO;
+		(yyval.tdef).tipo = T_ENTERO;
+	;}
+    break;
+
+  case 11:
+
+/* Line 1455 of yacc.c  */
+#line 76 "asin.y"
+    {
+  		(yyval.tdef).talla = (yyvsp[(3) - (4)].tdef).talla;
+  		(yyval.tdef).tipo = T_RECORD;
+  	;}
+    break;
+
+  case 12:
+
+/* Line 1455 of yacc.c  */
+#line 82 "asin.y"
+    {
+		(yyval.tdef).talla = (yyvsp[(1) - (1)].tdef).talla;
+	;}
+    break;
+
+  case 13:
+
+/* Line 1455 of yacc.c  */
+#line 86 "asin.y"
+    {
+		(yyval.tdef).talla += (yyvsp[(2) - (2)].tdef).talla;
 	;}
     break;
 
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 59 "asin.y"
+#line 91 "asin.y"
     {
 		descargaContexto(nivel);
 		nivel--;
@@ -1555,7 +1608,7 @@ yyreduce:
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 66 "asin.y"
+#line 98 "asin.y"
     {
 		nivel++;
 		cargaContexto(nivel);
@@ -1568,7 +1621,7 @@ yyreduce:
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 79 "asin.y"
+#line 111 "asin.y"
     {
   		//RECUERDA: codigo duplicado
   		printf("\ndeclarando parametro %s", (yyvsp[(2) - (2)].ident));
@@ -1580,7 +1633,7 @@ yyreduce:
   case 20:
 
 /* Line 1455 of yacc.c  */
-#line 86 "asin.y"
+#line 118 "asin.y"
     {
   		//RECUERDA: codigo duplicado
   		printf("\ndeclarando parametro %s", (yyvsp[(2) - (2)].ident));
@@ -1592,7 +1645,7 @@ yyreduce:
   case 27:
 
 /* Line 1455 of yacc.c  */
-#line 103 "asin.y"
+#line 135 "asin.y"
     {
 		nivel++;
 		cargaContexto(nivel);
@@ -1602,7 +1655,7 @@ yyreduce:
   case 28:
 
 /* Line 1455 of yacc.c  */
-#line 108 "asin.y"
+#line 140 "asin.y"
     {
 		nivel--;
 		descargaContexto(nivel);
@@ -1612,15 +1665,12 @@ yyreduce:
   case 63:
 
 /* Line 1455 of yacc.c  */
-#line 159 "asin.y"
+#line 191 "asin.y"
     {
   			SIMB sss = obtenerSimbolo((yyvsp[(1) - (1)].ident));
   			
-  			//printf("\n\n%d\n\n", sss.categoria);
-	  		if(sss.categoria!=NULO){ 
-	  			printf("\n variable ya declarada %s", (yyvsp[(1) - (1)].ident));
-	  		}else{//la variable no està declarada todavia
-	  			printf("\n variable NO declarada todavia %s", (yyvsp[(1) - (1)].ident));
+	  		if(sss.categoria==NULO){ 
+	  			yyerror("\n variable NO declarada todavia %s", (yyvsp[(1) - (1)].ident));
 	  		}
   		;}
     break;
@@ -1628,14 +1678,14 @@ yyreduce:
   case 64:
 
 /* Line 1455 of yacc.c  */
-#line 169 "asin.y"
+#line 198 "asin.y"
     {printf("\n valor: %d", (yyvsp[(1) - (1)].cent));;}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 1639 "asin.c"
+#line 1689 "asin.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1847,7 +1897,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 201 "asin.y"
+#line 230 "asin.y"
 
 
 

@@ -3,6 +3,12 @@
 #include "include/libtds.h"
 #include "include/libgci.h"
 extern int yylineno;
+
+/**************** Variables globales **********************/
+int old_dvar;              /* Desplazamiento en el Segmento de Variables  */
+int dpar;              /* Desplazamiento en el Segmento de Parametros de funcion  */
+int nivel; 			   /* Nivel de anidamiento */
+
 %}
 /**************** Definiciones para la gestion de BISON **********************/
 /*%token YYERROR_VERBOSE*/
@@ -12,6 +18,11 @@ extern int yylineno;
   char* ident;  /* Para los identificadores  */
   int cent;  /* Para constantes enteras */
   int op_rel;
+  struct tipo_def /* Estructura para una descricion de tipo */
+	{
+	  int talla;                            
+	  int tipo;                            
+	} tdef;
 }
 
 %token  PUNTOYCOMA_ PUNTO_ COMA_ PARABR_ PARCER_ LLAVABR_ LLAVCER_
@@ -20,6 +31,9 @@ MENOS_ DIV_ INCMAS_ INCMENOS_ ASIG_ ASIGMAS_ ASIGMENOS_ IGUAL_ DIF_ GT_ GTE_ LT_
 LTE_
 %token <ident> ID_
 %token <cent> CTE_
+%type <tdef> tipo
+%type <tdef> declaracionVariable
+%type <tdef> listaCampos
 
 %%
 programa: 
@@ -43,17 +57,35 @@ declaracion: declaracionVariable
 declaracionVariable: tipo ID_ PUNTOYCOMA_ 
 	{
 		printf("\ndeclarando var %s", $2);
-		insertaSimbolo($2, VARIABLE, T_ENTERO, dvar, nivel, -1);
-		dvar += TALLA_ENTERO;
-	
+		if(!insertaSimbolo($2, VARIABLE, $1.tipo, dvar, nivel, -1)){
+			yyerror("---> identificador repetido");
+		}
+		dvar += $1.talla; // update shift
+		
+		$$.talla = $1.talla; // moviendo hacia 
+		$$.tipo = $1.tipo;   //  arriba los valores
 	}
   | tipo ID_ CORABR_ CTE_ CORCER_ PUNTOYCOMA_
 ;
-tipo: INT_
+tipo: INT_ 
+	{
+		$$.talla = TALLA_ENTERO;
+		$$.tipo = T_ENTERO;
+	}
   | STRUCT_ LLAVABR_ listaCampos LLAVCER_
+  	{
+  		$$.talla = $3.talla;
+  		$$.tipo = T_RECORD;
+  	}
 ;
-listaCampos: declaracionVariable
+listaCampos: declaracionVariable 
+	{
+		$$.talla = $1.talla;
+	}
   | listaCampos declaracionVariable
+	{
+		$$.talla += $2.talla;
+	}
 ;
 declaracionFuncion: cabeceraFuncion bloque 
 	{
@@ -159,14 +191,11 @@ expresionSufija: ID_ CORABR_ expresion CORCER_
   | ID_ {
   			SIMB sss = obtenerSimbolo($1);
   			
-  			//printf("\n\n%d\n\n", sss.categoria);
-	  		if(sss.categoria!=NULO){ 
-	  			printf("\n variable ya declarada %s", $1);
-	  		}else{//la variable no està declarada todavia
-	  			printf("\n variable NO declarada todavia %s", $1);
+	  		if(sss.categoria==NULO){ 
+	  			yyerror("\n variable NO declarada todavia");
 	  		}
   		}
-  | CTE_ {printf("\n valor: %d", $1);}
+  | CTE_ 
 ;
 parametrosActuales:
   | listaParametrosActuales
