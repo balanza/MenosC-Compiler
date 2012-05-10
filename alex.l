@@ -116,8 +116,10 @@ return {return(RETURN_);}
 
 
 {letra}({letra}|{digito})* {creaNombre(); return(ID_);} 
+{menos}{digito}+ {creaCentera();  return(CTE_);} //constantes enteras
 {digito}+ {creaCentera(); return(CTE_);} //constantes enteras
 {digito}+{punto}{digito}+ {truncCreal(); return(CTE_);} 
+{menos}{digito}+{punto}{digito}+ {truncCreal(); return(CTE_);} 
 
 . {printf("\nnorec %d -> %d", yytext[0], -1);} //caractero desconoscido
 

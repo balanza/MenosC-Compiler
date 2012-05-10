@@ -21,8 +21,13 @@ int nivel; 			   /* Nivel de anidamiento */
   struct tipo_def /* Estructura para una descricion de tipo */
 	{
 	  int talla;                            
-	  int tipo;                            
+	  int tipo;  
+	  int ref;                          
 	} tdef;
+	struct exp_def{
+		int tipo;
+		int val;
+	} expdef;
 }
 
 %token  PUNTOYCOMA_ PUNTO_ COMA_ PARABR_ PARCER_ LLAVABR_ LLAVCER_
@@ -34,13 +39,19 @@ LTE_
 %type <tdef> tipo
 %type <tdef> declaracionVariable
 %type <tdef> listaCampos
+%type <tdef> cabeceraFuncion
+%type <tdef> declaracionFuncion
+%type <tdef> parametrosFormales
+%type <tdef> listaParametrosFormales
+
+%type <expdef> expresion
 
 %%
 programa: 
 	{
-		nivel = 0;
-		
+		nivel = 0;		
 		dvar = 0;
+		si = 0;
 		cargaContexto(nivel);
 	}
 secuenciaDeclaraciones
@@ -51,7 +62,7 @@ secuenciaDeclaraciones
 secuenciaDeclaraciones: declaracion
   | secuenciaDeclaraciones declaracion
 ;
-declaracion: declaracionVariable
+declaracion: declaracionVariable {mostrarTDS(nivel);}
   | declaracionFuncion
 ;
 declaracionVariable: tipo ID_ PUNTOYCOMA_ 
@@ -60,12 +71,33 @@ declaracionVariable: tipo ID_ PUNTOYCOMA_
 		if(!insertaSimbolo($2, VARIABLE, $1.tipo, dvar, nivel, -1)){
 			yyerror("---> identificador repetido");
 		}
+		//mostrarTDS(nivel);
 		dvar += $1.talla; // update shift
 		
 		$$.talla = $1.talla; // moviendo hacia 
 		$$.tipo = $1.tipo;   //  arriba los valores
 	}
   | tipo ID_ CORABR_ CTE_ CORCER_ PUNTOYCOMA_
+  {
+  	printf("\n cte: %d", $4);
+  	if($1.tipo!=T_ENTERO){
+		yyerror("el tipo de los vectores tiene que ser int");
+	} else if($4<=0){
+		yyerror("el array debe contener un numero positivo de elementos");
+	} else {
+		printf("\ndeclarando array %s", $2);
+		if(!insertaSimbolo($2, VARIABLE, T_ARRAY, dvar, nivel, -1)){
+			yyerror("---> identificador repetido");
+		}
+		//mostrarTDS(nivel);
+		dvar += $4 * $1.talla; // update shift
+		
+		$$.talla = $4 * $1.talla; // moviendo hacia 
+		$$.tipo = $1.tipo;   //  arriba los valores
+	}
+	
+	
+  }
 ;
 tipo: INT_ 
 	{
@@ -80,10 +112,16 @@ tipo: INT_
 ;
 listaCampos: declaracionVariable 
 	{
+		if(!$1.tipo==T_ENTERO){
+			yyerror("el tipo de los campos tiene que ser int");
+		}
 		$$.talla = $1.talla;
 	}
   | listaCampos declaracionVariable
 	{
+		if(!$2.tipo==T_ENTERO){
+			yyerror("el tipo de los campos tiene que ser int");
+		}
 		$$.talla += $2.talla;
 	}
 ;
@@ -96,32 +134,53 @@ declaracionFuncion: cabeceraFuncion bloque
 ;
 cabeceraFuncion: tipo ID_ PARABR_ 
 	{
+		if($1.tipo!=T_ENTERO){
+  			yyerror("la funcion tiene que ser de tipo int");
+  		}
 		nivel++;
 		cargaContexto(nivel);
 		dpar = 0;
 		old_dvar = dvar;
 		dvar = 0;
 	} 
-	parametrosFormales PARCER_
+	parametrosFormales  PARCER_
+	{
+		$$.tipo = $1.tipo;
+		$$.ref = -1;//$4.ref;
+	}	
 ;
-parametrosFormales: 
-  | listaParametrosFormales
+parametrosFormales: {$$.ref = -1;}
+  | listaParametrosFormales {$$.ref = $1.ref;}
 ;
 listaParametrosFormales: tipo ID_ 
   	{
-  		//RECUERDA: codigo duplicado
-  		printf("\ndeclarando parametro %s", $2);
-		insertaSimbolo($2, VARIABLE, T_ENTERO, -dpar, nivel, -1);
-		dpar += TALLA_ENTERO;
+  		if($1.tipo!=T_ENTERO){
+  			yyerror("los parametro tiene que ser de tipo int");
+  		} else {
+	  		//RECUERDA: codigo duplicado
+	  		printf("\ndeclarando parametro %s", $2);
+			if(!insertaSimbolo($2, VARIABLE, T_ENTERO, -dpar, nivel, -1)){
+				yyerror("Error en la declaracion de paramentro");
+			} else {
+				dpar += TALLA_ENTERO;
+				$$.ref = insertaInfoDominio(-1, $1.tipo);
+			}
+		}
   	}
-  | tipo ID_ 
+  | tipo ID_ COMA_ listaParametrosFormales   	
   	{
-  		//RECUERDA: codigo duplicado
-  		printf("\ndeclarando parametro %s", $2);
-		insertaSimbolo($2, VARIABLE, T_ENTERO, -dpar, nivel, -1);
-		dpar += TALLA_ENTERO;
-  	}
-  	COMA_ listaParametrosFormales
+  		if($1.tipo!=T_ENTERO){
+  			yyerror("los parametro tiene que ser de tipo int");
+  		} else {
+	  		//RECUERDA: codigo duplicado
+	  		if(!insertaSimbolo($2, VARIABLE, T_ENTERO, -dpar, nivel, -1)){
+				yyerror("Error en la declaracion de paramentro");
+			} else {
+				dpar += TALLA_ENTERO;
+			}
+			$$.ref = insertaInfoDominio($$.ref, $1.tipo);
+		}
+  	} 
 ;
 bloque: LLAVABR_ declaracionVariableLocal listaInstrucciones LLAVCER_
 ;
@@ -162,7 +221,11 @@ expresionOpcional:
 ;
 instruccionSalto: RETURN_ expresion PUNTOYCOMA_
 ;
-expresion: expresionIgualdad
+expresion: expresionIgualdad //TODO: PASAR VALORES
+	{
+		$$.tipo = NULL;
+		$$.val = NULL;
+	}
   | ID_ operadorAsignacion expresion
   | ID_ CORABR_ expresion CORCER_ operadorAsignacion expresion
   | ID_ PUNTO_ ID_ operadorAsignacion expresion

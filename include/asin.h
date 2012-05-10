@@ -91,13 +91,14 @@ typedef union YYSTYPE
   struct tipo_def /* Estructura para una descricion de tipo */
 	{
 	  int talla;                            
-	  int tipo;                            
+	  int tipo;  
+	  int ref;                          
 	} tdef;
 
 
 
 /* Line 1676 of yacc.c  */
-#line 101 "asin.h"
+#line 102 "asin.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

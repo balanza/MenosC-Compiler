@@ -1,7 +1,11 @@
 
             
 int b;
-int c;                                   
+int c;     
+int v[8]; 
+
+
+
 
 int doble(int x, int y, int z) 
 { int a; int b; int c;
@@ -15,5 +19,4 @@ int main()
 {                                              
   c=3.56;     //   y contante real, truncar a entera
   c = z * b; 	  // variable no declarada
-  dobxle();
 }
