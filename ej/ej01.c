@@ -1,17 +1,14 @@
 int b;
-int c;                                   
+struct {
+	int p;
+	int x;
+	int q;
+} a;
 
-int doble(int x, int y, int z) 
-{ int a; int b; int c;
-  print(a=x++);
-  print(b=++y);
-  print(c=z);
-  return a+b*c;
-}
-
-int main() 
-{                                              
-  c=3.56;     //   y contante real, truncar a entera
-   	  // variable no declarada
-}
+int v[10];
+struct {
+	int p;
+	int x;
+	int q;
+} k;
 

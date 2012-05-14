@@ -7,6 +7,7 @@ extern int yylineno;
 /**************** Variables globales **********************/
 int old_dvar;              /* Desplazamiento en el Segmento de Variables  */
 int dpar;              /* Desplazamiento en el Segmento de Parametros de funcion  */
+int dcmp;              /* Desplazamiento del campo en una estructura  */
 int nivel; 			   /* Nivel de anidamiento */
 
 %}
@@ -22,12 +23,10 @@ int nivel; 			   /* Nivel de anidamiento */
 	{
 	  int talla;                            
 	  int tipo;  
+	  char* id;
 	  int ref;                          
 	} tdef;
-	struct exp_def{
-		int tipo;
-		int val;
-	} expdef;
+	SIMB expdef; //???
 }
 
 %token  PUNTOYCOMA_ PUNTO_ COMA_ PARABR_ PARCER_ LLAVABR_ LLAVCER_
@@ -44,7 +43,7 @@ LTE_
 %type <tdef> parametrosFormales
 %type <tdef> listaParametrosFormales
 
-%type <expdef> expresion
+%type <expdef> expresionSufija
 
 %%
 programa: 
@@ -60,41 +59,43 @@ secuenciaDeclaraciones
 	}
 ;
 secuenciaDeclaraciones: declaracion
-  | secuenciaDeclaraciones declaracion
+  | secuenciaDeclaraciones declaracion {
+		mostrarTDS(nivel);}
 ;
-declaracion: declaracionVariable {mostrarTDS(nivel);}
+declaracion: declaracionVariable 
+	{
+		printf("\ndeclarando var %s", $1.id);
+		if(!insertaSimbolo($1.id, VARIABLE, $1.tipo, dvar, nivel, $1.ref)){
+			yyerror("---> identificador repetido");
+		} else {
+			dvar += $1.talla; // update shift
+		}
+		
+	}
   | declaracionFuncion
 ;
 declaracionVariable: tipo ID_ PUNTOYCOMA_ 
 	{
-		printf("\ndeclarando var %s", $2);
-		if(!insertaSimbolo($2, VARIABLE, $1.tipo, dvar, nivel, -1)){
-			yyerror("---> identificador repetido");
-		}
-		//mostrarTDS(nivel);
-		dvar += $1.talla; // update shift
-		
-		$$.talla = $1.talla; // moviendo hacia 
-		$$.tipo = $1.tipo;   //  arriba los valores
+		$$.id = $2;
+		$$.tipo = $1.tipo; 
+		$$.talla = $1.talla;
+		$$.ref = $1.ref;
+		printf("\nINFO VAR: tipo: %d, nombre: %s", $1.tipo, $2);
 	}
   | tipo ID_ CORABR_ CTE_ CORCER_ PUNTOYCOMA_
   {
-  	printf("\n cte: %d", $4);
+  	//printf("\n cte: %d, tipo: %d", $4, $1.tipo);
   	if($1.tipo!=T_ENTERO){
 		yyerror("el tipo de los vectores tiene que ser int");
 	} else if($4<=0){
 		yyerror("el array debe contener un numero positivo de elementos");
-	} else {
-		printf("\ndeclarando array %s", $2);
-		if(!insertaSimbolo($2, VARIABLE, T_ARRAY, dvar, nivel, -1)){
-			yyerror("---> identificador repetido");
-		}
-		//mostrarTDS(nivel);
-		dvar += $4 * $1.talla; // update shift
-		
-		$$.talla = $4 * $1.talla; // moviendo hacia 
-		$$.tipo = $1.tipo;   //  arriba los valores
+	} else {	
+		$$.id = $2;
+		$$.tipo = T_ARRAY;
+		$$.talla = 1; // ???
+		$$.ref = insertaInfoArray($1.tipo, $4);	
 	}
+	
 	
 	
   }
@@ -103,26 +104,34 @@ tipo: INT_
 	{
 		$$.talla = TALLA_ENTERO;
 		$$.tipo = T_ENTERO;
+		$$.ref = -1;
 	}
   | STRUCT_ LLAVABR_ listaCampos LLAVCER_
   	{
   		$$.talla = $3.talla;
   		$$.tipo = T_RECORD;
+  		$$.ref = $3.ref;
   	}
 ;
-listaCampos: declaracionVariable 
+listaCampos: declaracionVariable
 	{
-		if(!$1.tipo==T_ENTERO){
+		printf("\ndeclarando campo %s", $1.id);
+		if($1.tipo != T_ENTERO){
 			yyerror("el tipo de los campos tiene que ser int");
+		} else if($$.ref=insertaInfoCampo(-1, $1.id, $1.tipo, 0) == -1){
+			yyerror("error en la declaracion de campo de la estructura");
 		}
-		$$.talla = $1.talla;
+		dcmp = $1.talla;
 	}
-  | listaCampos declaracionVariable
+  | listaCampos declaracionVariable  	
 	{
-		if(!$2.tipo==T_ENTERO){
+		printf("\ndeclarando campo %s, ref %d", $2.id, $1.ref);
+		if($2.tipo != T_ENTERO){
 			yyerror("el tipo de los campos tiene que ser int");
+		} else if($$.ref=insertaInfoCampo($1.ref, $2.id, $2.tipo, dcmp)==-1){
+			yyerror("error en la declaracion de campo de la estructura");
 		}
-		$$.talla += $2.talla;
+		dcmp += $2.talla;
 	}
 ;
 declaracionFuncion: cabeceraFuncion bloque 
@@ -223,8 +232,8 @@ instruccionSalto: RETURN_ expresion PUNTOYCOMA_
 ;
 expresion: expresionIgualdad //TODO: PASAR VALORES
 	{
-		$$.tipo = NULL;
-		$$.val = NULL;
+		$$.tipo = 0;
+		$$.val = 0;
 	}
   | ID_ operadorAsignacion expresion
   | ID_ CORABR_ expresion CORCER_ operadorAsignacion expresion
@@ -252,10 +261,12 @@ expresionSufija: ID_ CORABR_ expresion CORCER_
   | ID_ PARABR_ parametrosActuales PARCER_ 
   | PARABR_ expresion PARCER_
   | ID_ {
-  			SIMB sss = obtenerSimbolo($1);
+  			SIMB id = obtenerSimbolo($1);
   			
-	  		if(sss.categoria==NULO){ 
-	  			yyerror("\n variable NO declarada todavia");
+	  		if(id.categoria==NULO){ 
+	  			yyerror("\n variable NO declarada todavia, primer uso");
+	  		} else {
+	  			
 	  		}
   		}
   | CTE_ 
