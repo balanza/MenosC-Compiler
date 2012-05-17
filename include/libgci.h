@@ -40,9 +40,6 @@
 #define DECTOP       28
 #define ETOB         29
 #define BTOE         30
-/******************************************* Tallas de los tipos y segmentos */
-#define TALLA_ENTERO     1
-#define TALLA_SEGENLACES 2       /* Talla del segmento de Enlaces de Control */
 
 typedef struct tipo_pos /*********** Estructura para una posición de memoria */
 {

@@ -9,6 +9,25 @@ int old_dvar;              /* Desplazamiento en el Segmento de Variables  */
 int dpar;              /* Desplazamiento en el Segmento de Parametros de funcion  */
 int dcmp;              /* Desplazamiento del campo en una estructura  */
 int nivel; 			   /* Nivel de anidamiento */
+/************************************* Codigos para los distintos operadores */
+#define DISTINTO      0
+#define IGUAL         1
+#define MAYOR         2
+#define MENOR         3
+#define MAYORIG       4
+#define MENORIG       5
+#define POR           6
+#define DIV           7
+#define MAS           8
+#define MENOS         9
+#define ASIG         10
+#define MASASIG      11
+#define MENOSASIG    12
+#define MASMAS       13
+#define MENOSMENOS   14 
+/******************************************* Tallas de los tipos y segmentos */
+#define TALLA_ENTERO     1
+#define TALLA_SEGENLACES 2       /* Talla del segmento de Enlaces de Control */
 
 %}
 /**************** Definiciones para la gestion de BISON **********************/
@@ -16,9 +35,10 @@ int nivel; 			   /* Nivel de anidamiento */
 /********** Tipos de datos para las declaraciones %token y %type *************/
 %union
 {
-  char* ident;  /* Para los identificadores  */
+  char* ident;  
+  /* Para los identificadores  */
   int cent;  /* Para constantes enteras */
-  int op_rel;
+  int operador;
   struct tipo_def /* Estructura para una descricion de tipo */
 	{
 	  int talla;                            
@@ -26,7 +46,10 @@ int nivel; 			   /* Nivel de anidamiento */
 	  char* id;
 	  int ref;                          
 	} tdef;
-	SIMB expdef; //???
+  struct exp_def{
+	int tipo;
+	int val;
+	} expdef; //???
 }
 
 %token  PUNTOYCOMA_ PUNTO_ COMA_ PARABR_ PARCER_ LLAVABR_ LLAVCER_
@@ -35,6 +58,7 @@ MENOS_ DIV_ INCMAS_ INCMENOS_ ASIG_ ASIGMAS_ ASIGMENOS_ IGUAL_ DIF_ GT_ GTE_ LT_
 LTE_
 %token <ident> ID_
 %token <cent> CTE_
+
 %type <tdef> tipo
 %type <tdef> declaracionVariable
 %type <tdef> listaCampos
@@ -43,7 +67,22 @@ LTE_
 %type <tdef> parametrosFormales
 %type <tdef> listaParametrosFormales
 
+%type <expdef> expresion
 %type <expdef> expresionSufija
+%type <expdef> expresionIgualdad
+%type <expdef> expresionOpcional
+%type <expdef> expresionRelacional
+%type <expdef> expresionAditiva
+%type <expdef> expresionMultiplicativa
+%type <expdef> expresionUnaria
+
+%type <operador> operadorAsignacion
+%type <operador> operadorIgualdad
+%type <operador> operadorRelacional
+%type <operador> operadorAditivo
+%type <operador> operadorMultiplicativo
+%type <operador> operadorIncremento
+%type <operador> operadorUnario
 
 %%
 programa: 
@@ -59,8 +98,10 @@ secuenciaDeclaraciones
 	}
 ;
 secuenciaDeclaraciones: declaracion
-  | secuenciaDeclaraciones declaracion {
-		mostrarTDS(nivel);}
+  | secuenciaDeclaraciones declaracion 
+  	{
+		//mostrarTDS(nivel);
+	}
 ;
 declaracion: declaracionVariable 
 	{
@@ -72,7 +113,16 @@ declaracion: declaracionVariable
 		}
 		
 	}
-  | declaracionFuncion
+  | declaracionFuncion 
+	{
+		printf("\ndeclarando func %s", $1.id);
+		if(!insertaSimbolo($1.id, FUNCION, $1.tipo, si, nivel, $1.ref)){
+			yyerror("---> funcion repetida");
+		} else {
+			dvar += $1.talla; // update shift
+		}
+		
+	}
 ;
 declaracionVariable: tipo ID_ PUNTOYCOMA_ 
 	{
@@ -139,27 +189,45 @@ declaracionFuncion: cabeceraFuncion bloque
 		descargaContexto(nivel);
 		nivel--;
 		dvar = old_dvar;
+		
+		$$.tipo = $1.tipo;
+		$$.ref = $1.ref;
+		$$.id = $1.id;
+		$$.talla = $1.talla;
 	}
 ;
 cabeceraFuncion: tipo ID_ PARABR_ 
 	{
 		if($1.tipo!=T_ENTERO){
   			yyerror("la funcion tiene que ser de tipo int");
-  		}
-		nivel++;
-		cargaContexto(nivel);
-		dpar = 0;
-		old_dvar = dvar;
-		dvar = 0;
+  			//TODO: parar ejecucion
+  		} 
+  		
+  			nivel++;
+			cargaContexto(nivel);
+			dpar = TALLA_SEGENLACES;
+			old_dvar = dvar;
+			dvar = 0;
+  		
+		
 	} 
 	parametrosFormales  PARCER_
 	{
+	
 		$$.tipo = $1.tipo;
-		$$.ref = -1;//$4.ref;
+		$$.ref = $5.ref;
+		$$.id = $2;
+		$$.talla = $1.talla;		
 	}	
 ;
-parametrosFormales: {$$.ref = -1;}
-  | listaParametrosFormales {$$.ref = $1.ref;}
+parametrosFormales: 
+	{
+		$$.ref = insertaInfoDominio(-1, T_VACIO);
+	}
+  | listaParametrosFormales 
+  	{
+  		$$.ref = $1.ref;
+  	}
 ;
 listaParametrosFormales: tipo ID_ 
   	{
@@ -167,11 +235,11 @@ listaParametrosFormales: tipo ID_
   			yyerror("los parametro tiene que ser de tipo int");
   		} else {
 	  		//RECUERDA: codigo duplicado
-	  		printf("\ndeclarando parametro %s", $2);
-			if(!insertaSimbolo($2, VARIABLE, T_ENTERO, -dpar, nivel, -1)){
+	  		printf("\ndeclarando parametro (a) %s", $2);
+			if(!insertaSimbolo($2, PARAMETRO, $1.tipo, -dpar, nivel, -1)){
 				yyerror("Error en la declaracion de paramentro");
 			} else {
-				dpar += TALLA_ENTERO;
+				dpar += $1.talla;
 				$$.ref = insertaInfoDominio(-1, $1.tipo);
 			}
 		}
@@ -182,12 +250,14 @@ listaParametrosFormales: tipo ID_
   			yyerror("los parametro tiene que ser de tipo int");
   		} else {
 	  		//RECUERDA: codigo duplicado
-	  		if(!insertaSimbolo($2, VARIABLE, T_ENTERO, -dpar, nivel, -1)){
+	  		printf("\ndeclarando parametro (b) %s", $2);
+	  		if(!insertaSimbolo($2, PARAMETRO, $1.tipo, -dpar, nivel, -1)){
 				yyerror("Error en la declaracion de paramentro");
 			} else {
-				dpar += TALLA_ENTERO;
+				dpar += $1.talla;
 			}
-			$$.ref = insertaInfoDominio($$.ref, $1.tipo);
+			$$.ref = insertaInfoDominio($4.ref, $1.tipo);
+			mostrarTDS(nivel);
 		}
   	} 
 ;
@@ -226,40 +296,142 @@ instruccionSeleccion: IF_ PARABR_ expresion PARCER_ instruccion ELSE_ instruccio
 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ expresion PUNTOYCOMA_ expresionOpcional PARCER_ instruccion
 ;
 expresionOpcional: 
+	{
+		$$.val = 0;
+	}
   | expresion
+  	{
+  		$$.val = $1.val;
+  	}
 ;
 instruccionSalto: RETURN_ expresion PUNTOYCOMA_
 ;
-expresion: expresionIgualdad //TODO: PASAR VALORES
+expresion: expresionIgualdad 
 	{
-		$$.tipo = 0;
-		$$.val = 0;
+		$$.val = $1.val;
 	}
   | ID_ operadorAsignacion expresion
+  	{
+  		$$.val = $3.val;
+  	}
   | ID_ CORABR_ expresion CORCER_ operadorAsignacion expresion
+  	{
+  		$$.val = $6.val;
+  	}
   | ID_ PUNTO_ ID_ operadorAsignacion expresion
+  	{
+  		$$.val = $5.val; //TODO; añadir switch for operadores de asignacion
+  	}
 ;
 expresionIgualdad: expresionRelacional
+  	{
+  		$$.val = $1.val;
+  	}
   | expresionIgualdad operadorIgualdad expresionRelacional
+   	{
+   		//TODO: TEST XOR
+   		int x = (($1.val == $3.val) ^ $2==IGUAL);
+   		printf("\n XOR v1: %d, v2: %d, op: %d, res: %d", $1.val, $3.val, $2, x);
+   		$$.val = x;  		
+  	}
 ;
 expresionRelacional: expresionAditiva
+	{
+		$$.val = $1.val;
+	}
   | expresionRelacional operadorRelacional expresionAditiva
+  	{
+  		switch($2){
+  			case MAYOR:
+  				$$.val = ($1.val > $3.val);
+  				break;
+  			case MENOR:
+  				$$.val = ($1.val < $3.val);
+  				break;
+  			case MAYORIG:
+  				$$.val = ($1.val >= $3.val);
+  				break;
+  			case MENORIG:
+  				$$.val = ($1.val <= $3.val);
+  				break;
+  			default:
+  				yyerror("Operador relacional desconocido");
+  		}
+  	}
 ;
 expresionAditiva: expresionMultiplicativa
+	{
+		$$.val = $1.val;
+	}
   | expresionAditiva operadorAditivo expresionMultiplicativa
+  	{
+  		switch($2){
+  			case MAS:
+  				$$.val = $1.val + $3.val;
+  				break;
+  			case MENOS:
+  				$$.val = $1.val - $3.val;
+  				break;
+  			default:
+  				yyerror("Operador aditivo desconocido");
+  		}
+  	}
 ;
 expresionMultiplicativa: expresionUnaria
+	{
+		$$.val = $1.val;
+	}
   | expresionMultiplicativa operadorMultiplicativo expresionUnaria
+  	{
+  		switch($2){
+  			case POR:
+  				$$.val = $1.val * $3.val;
+  				break;
+  			case DIV:
+  				$$.val = $1.val / $3.val;
+  				break;
+  			default:
+  				yyerror("Operador multiplicativo desconocido");
+  		}
+  	}
 ;
-expresionUnaria: expresionSufija
+expresionUnaria: expresionSufija 
+	{
+		$$.val = $1.val;
+	}
   | operadorUnario expresionUnaria
-  | operadorIncremento ID_
+  	{
+  		if($1 == MENOS){
+  			$$.val = - $2.val;
+  		} else {
+  			$$.val = $2.val;
+  		}
+  	}
+  | operadorIncremento ID_ 
+  	{
+  		$$.val = -1; //TODO: valor de la variable
+  	}
 ;
 expresionSufija: ID_ CORABR_ expresion CORCER_
+	{
+		$$.val = -1;
+	}
   | ID_ PUNTO_ ID_
+  	{
+  		$$.val = -1;
+  	}
   | ID_ operadorIncremento
+	{
+		$$.val = -1;
+	}
   | ID_ PARABR_ parametrosActuales PARCER_ 
+	{
+		$$.val = -1; 
+	}
   | PARABR_ expresion PARCER_
+	{
+		$$.val = $2.val;
+	}
   | ID_ {
   			SIMB id = obtenerSimbolo($1);
   			
@@ -270,6 +442,9 @@ expresionSufija: ID_ CORABR_ expresion CORCER_
 	  		}
   		}
   | CTE_ 
+  	{
+  		$$.val = $1;
+  	}
 ;
 parametrosActuales:
   | listaParametrosActuales
@@ -278,28 +453,79 @@ listaParametrosActuales: expresion
   | expresion COMA_ listaParametrosActuales
 ;
 operadorAsignacion: ASIG_
+	{
+		$$ = ASIG;
+	}
   | ASIGMAS_
+	{
+		$$ = MASASIG;
+	}
   | ASIGMENOS_
+	{
+		$$ = MENOSASIG;
+	}
 ;
 operadorIgualdad: IGUAL_
-  DIF_
+	{
+		$$ = IGUAL;
+	}
+  | DIF_
+	{
+		$$ = DISTINTO;
+	}
 ;
 operadorRelacional: GT_
+	{
+		$$ = MAYOR;
+	}
   | GTE_
+	{
+		$$ = MAYORIG;
+	}
   | LT_
+	{
+		$$ = MENOR;
+	}
   | LTE_
+	{
+		$$ = MENORIG;
+	}
 ;
 operadorAditivo: MAS_
+	{
+		$$ = MAS;
+	}
   | MENOS_
+	{
+		$$ = MENOS;
+	}
 ;
 operadorMultiplicativo: POR_
+	{
+		$$ = POR;
+	}
   | DIV_
+	{
+		$$ = DIV;
+	}
 ;
 operadorIncremento: INCMAS_
+	{
+		$$ = MASMAS;
+	}
   | INCMENOS_
+	{
+		$$ = MENOSMENOS;
+	}
 ;
 operadorUnario: MAS_
+	{
+		$$ = MAS;
+	}
   | MENOS_
+	{
+		$$ = MENOS;
+	}
 ;
 %%
 
