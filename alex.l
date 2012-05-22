@@ -2,10 +2,11 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "include/asin.h"
 
 #include "include/libtds.h"
+#include "include/libgci.h"
 
+#include "include/asin.h"
 
 void creaNOmbre();
 void creCentera();

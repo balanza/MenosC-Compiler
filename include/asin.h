@@ -96,15 +96,12 @@ typedef union YYSTYPE
 	  char* id;
 	  int ref;                          
 	} tdef;
-  struct exp_def{
-	int tipo;
-	int val;
-	} expdef; //???
+    TIPO_ARG expdef; 
 
 
 
 /* Line 1676 of yacc.c  */
-#line 108 "asin.h"
+#line 105 "asin.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

@@ -1,7 +1,7 @@
 %{
 #include <stdio.h>
-#include "include/libtds.h"
 #include "include/libgci.h"
+#include "include/libtds.h"
 extern int yylineno;
 
 /**************** Variables globales **********************/
@@ -46,10 +46,7 @@ int nivel; 			   /* Nivel de anidamiento */
 	  char* id;
 	  int ref;                          
 	} tdef;
-  struct exp_def{
-	int tipo;
-	int val;
-	} expdef; //???
+    TIPO_ARG expdef; 
 }
 
 %token  PUNTOYCOMA_ PUNTO_ COMA_ PARABR_ PARCER_ LLAVABR_ LLAVCER_
@@ -95,6 +92,7 @@ programa:
 secuenciaDeclaraciones
 	{
 		descargaContexto(nivel);
+		vuelcaCodigo("codigo");
 	}
 ;
 secuenciaDeclaraciones: declaracion
@@ -116,7 +114,7 @@ declaracion: declaracionVariable
   | declaracionFuncion 
 	{
 		printf("\ndeclarando func %s", $1.id);
-		if(!insertaSimbolo($1.id, FUNCION, $1.tipo, si, nivel, $1.ref)){
+		if(!insertaSimbolo($1.id, FUNCION, $1.tipo, dvar, nivel, $1.ref)){
 			yyerror("---> funcion repetida");
 		} else {
 			dvar += $1.talla; // update shift
@@ -297,7 +295,7 @@ instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ expresion PUNT
 ;
 expresionOpcional: 
 	{
-		$$.val = 0;
+		$$.val.i = 0;
 	}
   | expresion
   	{
@@ -313,6 +311,25 @@ expresion: expresionIgualdad
   | ID_ operadorAsignacion expresion
   	{
   		$$.val = $3.val;
+  		
+  		SIMB sim;
+		sim = obtenerSimbolo($1);
+		if (sim.categoria == NULO){
+			yyerror("Identificador no declarado");
+		}
+		if ((sim.tipo==$3.tipo)&&(sim.tipo==T_ENTERO)){ 
+			$$.tipo = T_ENTERO;
+		}
+		else {
+		
+			if (($3.tipo!=T_ERROR)&&(sim.tipo!=T_ERROR)){
+				yyerror("Error de tipos en la asignacion de la ((expresion))");
+			}
+			$$.tipo=T_ERROR;
+		}
+		
+  		
+  		
   	}
   | ID_ CORABR_ expresion CORCER_ operadorAsignacion expresion
   	{
@@ -330,9 +347,15 @@ expresionIgualdad: expresionRelacional
   | expresionIgualdad operadorIgualdad expresionRelacional
    	{
    		//TODO: TEST XOR
-   		int x = (($1.val == $3.val) ^ $2==IGUAL);
-   		printf("\n XOR v1: %d, v2: %d, op: %d, res: %d", $1.val, $3.val, $2, x);
-   		$$.val = x;  		
+   		int x = (($1.val.i == $3.val.i) ^ $2==IGUAL); //TODO: COMPROBAR VALORES DE POSICIONES
+   		/*
+   			x es cierta si:
+   				- el operador es de igualdad y los valores son iguales
+   				- el operador es de no-igualidad y los valores son distintos
+   			sino, x es falso
+   		*/
+   		printf("\n XOR v1: %d, v2: %d, op: %d, res: %d", $1.val.i, $3.val.i, $2, x);
+   		$$.val.i = x;  		
   	}
 ;
 expresionRelacional: expresionAditiva
@@ -343,16 +366,16 @@ expresionRelacional: expresionAditiva
   	{
   		switch($2){
   			case MAYOR:
-  				$$.val = ($1.val > $3.val);
+  				$$.val.i = ($1.val.i > $3.val.i);
   				break;
   			case MENOR:
-  				$$.val = ($1.val < $3.val);
+  				$$.val.i = ($1.val.i < $3.val.i);
   				break;
   			case MAYORIG:
-  				$$.val = ($1.val >= $3.val);
+  				$$.val.i = ($1.val.i >= $3.val.i);
   				break;
   			case MENORIG:
-  				$$.val = ($1.val <= $3.val);
+  				$$.val.i = ($1.val.i <= $3.val.i);
   				break;
   			default:
   				yyerror("Operador relacional desconocido");
@@ -367,10 +390,10 @@ expresionAditiva: expresionMultiplicativa
   	{
   		switch($2){
   			case MAS:
-  				$$.val = $1.val + $3.val;
+  				$$.val.i = $1.val.i + $3.val.i;
   				break;
   			case MENOS:
-  				$$.val = $1.val - $3.val;
+  				$$.val.i = $1.val.i - $3.val.i;
   				break;
   			default:
   				yyerror("Operador aditivo desconocido");
@@ -385,10 +408,10 @@ expresionMultiplicativa: expresionUnaria
   	{
   		switch($2){
   			case POR:
-  				$$.val = $1.val * $3.val;
+  				$$.val.i = $1.val.i * $3.val.i;
   				break;
   			case DIV:
-  				$$.val = $1.val / $3.val;
+  				$$.val.i = $1.val.i / $3.val.i;
   				break;
   			default:
   				yyerror("Operador multiplicativo desconocido");
@@ -402,35 +425,51 @@ expresionUnaria: expresionSufija
   | operadorUnario expresionUnaria
   	{
   		if($1 == MENOS){
-  			$$.val = - $2.val;
+  			$$.val.i = - $2.val.i;
   		} else {
-  			$$.val = $2.val;
+  			$$.val.i = $2.val.i;
   		}
   	}
   | operadorIncremento ID_ 
   	{
-  		$$.val = -1; //TODO: valor de la variable
+  		 		
+  		SIMB sim; 
+  		TIPO_ARG res;
+  		  		
+		sim = obtenerSimbolo($2);
+		/* comprobaciones semanticas */
+		res = crArgPosicion(sim.nivel, sim.desp);
+		$$ = crArgPosicion(nivel, creaVarTemp());		
+		$$.tipo = T_ENTERO;
+		/************************************** INCREMENTA o DECREMENTA 1 */
+		emite($1, res, crArgEntero(1), res);
+		/***************************************************** Asignacion */
+		emite(EASIG, res, crArgNulo(), $$);
   	}
 ;
 expresionSufija: ID_ CORABR_ expresion CORCER_
 	{
-		$$.val = -1;
+		$$.val.i = -1;
 	}
   | ID_ PUNTO_ ID_
   	{
-  		$$.val = -1;
+  		$$.val.i = -1;
   	}
   | ID_ operadorIncremento
 	{
-		$$.val = -1;
+		$$.val.i = -1; //valor de ID_
+					//TODO: ID_ := ID_ + 1
+		$$.tipo = T_ENTERO;
 	}
   | ID_ PARABR_ parametrosActuales PARCER_ 
 	{
-		$$.val = -1; 
+		$$.val.i = -1; 
+		//TODO: $$.tipo = tipo de la funcion
 	}
   | PARABR_ expresion PARCER_
 	{
-		$$.val = $2.val;
+		$$.val.i = $2.val.i;
+		$$.tipo = $2.tipo;
 	}
   | ID_ {
   			SIMB id = obtenerSimbolo($1);
@@ -440,10 +479,14 @@ expresionSufija: ID_ CORABR_ expresion CORCER_
 	  		} else {
 	  			
 	  		}
+	  		
+	  		
+	  		$$.tipo = id.tipo;
   		}
   | CTE_ 
   	{
-  		$$.val = $1;
+  		$$.val.i = $1;
+  		$$.tipo = T_ENTERO;
   	}
 ;
 parametrosActuales:
@@ -511,20 +554,20 @@ operadorMultiplicativo: POR_
 ;
 operadorIncremento: INCMAS_
 	{
-		$$ = MASMAS;
+		$$ = ESUM;//MASMAS;
 	}
   | INCMENOS_
 	{
-		$$ = MENOSMENOS;
+		$$ = EDIF;//MENOSMENOS;
 	}
 ;
 operadorUnario: MAS_
 	{
-		$$ = MAS;
+		$$ = ESUM;
 	}
   | MENOS_
 	{
-		$$ = MENOS;
+		$$ = EDIF;
 	}
 ;
 %%
