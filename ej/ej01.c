@@ -1,14 +1,14 @@
+int a;
 int b;
-struct {
-	int p;
-	int x;
-	int q;
-} a;
 
-int v[10];
-struct {
-	int p;
+int main(){
 	int x;
-	int q;
-} k;
+	
+	
+	b = 5; // b=5
+	a = b*2; // int t1; t1=b*2; a=t1;
+	x = a/b; // int t2; t2=a/b; x=t2;
+	
+	x = foo(5, a);
 
+}

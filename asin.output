@@ -1,0 +1,1932 @@
+Grammar
+
+    0 $accept: programa $end
+
+    1 $@1: /* empty */
+
+    2 programa: $@1 secuenciaDeclaraciones
+
+    3 secuenciaDeclaraciones: declaracion
+    4                       | secuenciaDeclaraciones declaracion
+
+    5 declaracion: declaracionVariable
+    6            | declaracionFuncion
+
+    7 declaracionVariable: tipo ID_ PUNTOYCOMA_
+    8                    | tipo ID_ CORABR_ CTE_ CORCER_ PUNTOYCOMA_
+
+    9 tipo: INT_
+   10     | STRUCT_ LLAVABR_ listaCampos LLAVCER_
+
+   11 listaCampos: declaracionVariable
+   12            | listaCampos declaracionVariable
+
+   13 declaracionFuncion: cabeceraFuncion bloque
+
+   14 $@2: /* empty */
+
+   15 cabeceraFuncion: tipo ID_ PARABR_ $@2 parametrosFormales PARCER_
+
+   16 parametrosFormales: /* empty */
+   17                   | listaParametrosFormales
+
+   18 listaParametrosFormales: tipo ID_
+   19                        | tipo ID_ COMA_ listaParametrosFormales
+
+   20 bloque: LLAVABR_ declaracionVariableLocal listaInstrucciones LLAVCER_
+
+   21 declaracionVariableLocal: /* empty */
+   22                         | declaracionVariableLocal declaracionVariable
+
+   23 listaInstrucciones: /* empty */
+   24                   | listaInstrucciones instruccion
+
+   25 $@3: /* empty */
+
+   26 instruccion: $@3 LLAVABR_ declaracionVariableLocal listaInstrucciones LLAVCER_
+   27            | instruccionExpresion
+   28            | instruccionEntradaSalida
+   29            | instruccionSeleccion
+   30            | instruccionIteraccion
+   31            | instruccionSalto
+
+   32 instruccionExpresion: PUNTOYCOMA_
+   33                     | expresion PUNTOYCOMA_
+
+   34 instruccionEntradaSalida: READ_ PARABR_ ID_ PARCER_ PUNTOYCOMA_
+   35                         | PRINT_ PARABR_ expresion PARCER_ PUNTOYCOMA_
+
+   36 instruccionSeleccion: IF_ PARABR_ expresion PARCER_ instruccion ELSE_ instruccion
+
+   37 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ expresion PUNTOYCOMA_ expresionOpcional PARCER_ instruccion
+
+   38 expresionOpcional: /* empty */
+   39                  | expresion
+
+   40 instruccionSalto: RETURN_ expresion PUNTOYCOMA_
+
+   41 expresion: expresionIgualdad
+   42          | ID_ operadorAsignacion expresion
+   43          | ID_ CORABR_ expresion CORCER_ operadorAsignacion expresion
+   44          | ID_ PUNTO_ ID_ operadorAsignacion expresion
+
+   45 expresionIgualdad: expresionRelacional
+   46                  | expresionIgualdad operadorIgualdad expresionRelacional
+
+   47 expresionRelacional: expresionAditiva
+   48                    | expresionRelacional operadorRelacional expresionAditiva
+
+   49 expresionAditiva: expresionMultiplicativa
+   50                 | expresionAditiva operadorAditivo expresionMultiplicativa
+
+   51 expresionMultiplicativa: expresionUnaria
+   52                        | expresionMultiplicativa operadorMultiplicativo expresionUnaria
+
+   53 expresionUnaria: expresionSufija
+   54                | operadorUnario expresionUnaria
+   55                | operadorIncremento ID_
+
+   56 expresionSufija: ID_ CORABR_ expresion CORCER_
+   57                | ID_ PUNTO_ ID_
+   58                | ID_ operadorIncremento
+   59                | ID_ PARABR_ parametrosActuales PARCER_
+   60                | PARABR_ expresion PARCER_
+   61                | ID_
+   62                | CTE_
+
+   63 parametrosActuales: /* empty */
+   64                   | listaParametrosActuales
+
+   65 listaParametrosActuales: expresion
+   66                        | expresion COMA_ listaParametrosActuales
+
+   67 operadorAsignacion: ASIG_
+   68                   | ASIGMAS_
+   69                   | ASIGMENOS_
+
+   70 operadorIgualdad: IGUAL_
+   71                 | DIF_
+
+   72 operadorRelacional: GT_
+   73                   | GTE_
+   74                   | LT_
+   75                   | LTE_
+
+   76 operadorAditivo: MAS_
+   77                | MENOS_
+
+   78 operadorMultiplicativo: POR_
+   79                       | DIV_
+
+   80 operadorIncremento: INCMAS_
+   81                   | INCMENOS_
+
+   82 operadorUnario: MAS_
+   83               | MENOS_
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+PUNTOYCOMA_ (258) 7 8 32 33 34 35 37 40
+PUNTO_ (259) 44 57
+COMA_ (260) 19 66
+PARABR_ (261) 15 34 35 36 37 59 60
+PARCER_ (262) 15 34 35 36 37 59 60
+LLAVABR_ (263) 10 20 26
+LLAVCER_ (264) 10 20 26
+CORABR_ (265) 8 43 56
+CORCER_ (266) 8 43 56
+INT_ (267) 9
+STRUCT_ (268) 10
+READ_ (269) 34
+PRINT_ (270) 35
+IF_ (271) 36
+ELSE_ (272) 36
+FOR_ (273) 37
+RETURN_ (274) 40
+MAS_ (275) 76 82
+POR_ (276) 78
+MENOS_ (277) 77 83
+DIV_ (278) 79
+INCMAS_ (279) 80
+INCMENOS_ (280) 81
+ASIG_ (281) 67
+ASIGMAS_ (282) 68
+ASIGMENOS_ (283) 69
+IGUAL_ (284) 70
+DIF_ (285) 71
+GT_ (286) 72
+GTE_ (287) 73
+LT_ (288) 74
+LTE_ (289) 75
+ID_ (290) 7 8 15 18 19 34 42 43 44 55 56 57 58 59 61
+CTE_ (291) 8 62
+
+
+Nonterminals, with rules where they appear
+
+$accept (37)
+    on left: 0
+programa (38)
+    on left: 2, on right: 0
+$@1 (39)
+    on left: 1, on right: 2
+secuenciaDeclaraciones (40)
+    on left: 3 4, on right: 2 4
+declaracion (41)
+    on left: 5 6, on right: 3 4
+declaracionVariable (42)
+    on left: 7 8, on right: 5 11 12 22
+tipo (43)
+    on left: 9 10, on right: 7 8 15 18 19
+listaCampos (44)
+    on left: 11 12, on right: 10 12
+declaracionFuncion (45)
+    on left: 13, on right: 6
+cabeceraFuncion (46)
+    on left: 15, on right: 13
+$@2 (47)
+    on left: 14, on right: 15
+parametrosFormales (48)
+    on left: 16 17, on right: 15
+listaParametrosFormales (49)
+    on left: 18 19, on right: 17 19
+bloque (50)
+    on left: 20, on right: 13
+declaracionVariableLocal (51)
+    on left: 21 22, on right: 20 22 26
+listaInstrucciones (52)
+    on left: 23 24, on right: 20 24 26
+instruccion (53)
+    on left: 26 27 28 29 30 31, on right: 24 36 37
+$@3 (54)
+    on left: 25, on right: 26
+instruccionExpresion (55)
+    on left: 32 33, on right: 27
+instruccionEntradaSalida (56)
+    on left: 34 35, on right: 28
+instruccionSeleccion (57)
+    on left: 36, on right: 29
+instruccionIteraccion (58)
+    on left: 37, on right: 30
+expresionOpcional (59)
+    on left: 38 39, on right: 37
+instruccionSalto (60)
+    on left: 40, on right: 31
+expresion (61)
+    on left: 41 42 43 44, on right: 33 35 36 37 39 40 42 43 44 56 60
+    65 66
+expresionIgualdad (62)
+    on left: 45 46, on right: 41 46
+expresionRelacional (63)
+    on left: 47 48, on right: 45 46 48
+expresionAditiva (64)
+    on left: 49 50, on right: 47 48 50
+expresionMultiplicativa (65)
+    on left: 51 52, on right: 49 50 52
+expresionUnaria (66)
+    on left: 53 54 55, on right: 51 52 54
+expresionSufija (67)
+    on left: 56 57 58 59 60 61 62, on right: 53
+parametrosActuales (68)
+    on left: 63 64, on right: 59
+listaParametrosActuales (69)
+    on left: 65 66, on right: 64 66
+operadorAsignacion (70)
+    on left: 67 68 69, on right: 42 43 44
+operadorIgualdad (71)
+    on left: 70 71, on right: 46
+operadorRelacional (72)
+    on left: 72 73 74 75, on right: 48
+operadorAditivo (73)
+    on left: 76 77, on right: 50
+operadorMultiplicativo (74)
+    on left: 78 79, on right: 52
+operadorIncremento (75)
+    on left: 80 81, on right: 55 58
+operadorUnario (76)
+    on left: 82 83, on right: 54
+
+
+state 0
+
+    0 $accept: . programa $end
+
+    $default  reduce using rule 1 ($@1)
+
+    programa  go to state 1
+    $@1       go to state 2
+
+
+state 1
+
+    0 $accept: programa . $end
+
+    $end  shift, and go to state 3
+
+
+state 2
+
+    2 programa: $@1 . secuenciaDeclaraciones
+
+    INT_     shift, and go to state 4
+    STRUCT_  shift, and go to state 5
+
+    secuenciaDeclaraciones  go to state 6
+    declaracion             go to state 7
+    declaracionVariable     go to state 8
+    tipo                    go to state 9
+    declaracionFuncion      go to state 10
+    cabeceraFuncion         go to state 11
+
+
+state 3
+
+    0 $accept: programa $end .
+
+    $default  accept
+
+
+state 4
+
+    9 tipo: INT_ .
+
+    $default  reduce using rule 9 (tipo)
+
+
+state 5
+
+   10 tipo: STRUCT_ . LLAVABR_ listaCampos LLAVCER_
+
+    LLAVABR_  shift, and go to state 12
+
+
+state 6
+
+    2 programa: $@1 secuenciaDeclaraciones .
+    4 secuenciaDeclaraciones: secuenciaDeclaraciones . declaracion
+
+    INT_     shift, and go to state 4
+    STRUCT_  shift, and go to state 5
+
+    $default  reduce using rule 2 (programa)
+
+    declaracion          go to state 13
+    declaracionVariable  go to state 8
+    tipo                 go to state 9
+    declaracionFuncion   go to state 10
+    cabeceraFuncion      go to state 11
+
+
+state 7
+
+    3 secuenciaDeclaraciones: declaracion .
+
+    $default  reduce using rule 3 (secuenciaDeclaraciones)
+
+
+state 8
+
+    5 declaracion: declaracionVariable .
+
+    $default  reduce using rule 5 (declaracion)
+
+
+state 9
+
+    7 declaracionVariable: tipo . ID_ PUNTOYCOMA_
+    8                    | tipo . ID_ CORABR_ CTE_ CORCER_ PUNTOYCOMA_
+   15 cabeceraFuncion: tipo . ID_ PARABR_ $@2 parametrosFormales PARCER_
+
+    ID_  shift, and go to state 14
+
+
+state 10
+
+    6 declaracion: declaracionFuncion .
+
+    $default  reduce using rule 6 (declaracion)
+
+
+state 11
+
+   13 declaracionFuncion: cabeceraFuncion . bloque
+
+    LLAVABR_  shift, and go to state 15
+
+    bloque  go to state 16
+
+
+state 12
+
+   10 tipo: STRUCT_ LLAVABR_ . listaCampos LLAVCER_
+
+    INT_     shift, and go to state 4
+    STRUCT_  shift, and go to state 5
+
+    declaracionVariable  go to state 17
+    tipo                 go to state 18
+    listaCampos          go to state 19
+
+
+state 13
+
+    4 secuenciaDeclaraciones: secuenciaDeclaraciones declaracion .
+
+    $default  reduce using rule 4 (secuenciaDeclaraciones)
+
+
+state 14
+
+    7 declaracionVariable: tipo ID_ . PUNTOYCOMA_
+    8                    | tipo ID_ . CORABR_ CTE_ CORCER_ PUNTOYCOMA_
+   15 cabeceraFuncion: tipo ID_ . PARABR_ $@2 parametrosFormales PARCER_
+
+    PUNTOYCOMA_  shift, and go to state 20
+    PARABR_      shift, and go to state 21
+    CORABR_      shift, and go to state 22
+
+
+state 15
+
+   20 bloque: LLAVABR_ . declaracionVariableLocal listaInstrucciones LLAVCER_
+
+    $default  reduce using rule 21 (declaracionVariableLocal)
+
+    declaracionVariableLocal  go to state 23
+
+
+state 16
+
+   13 declaracionFuncion: cabeceraFuncion bloque .
+
+    $default  reduce using rule 13 (declaracionFuncion)
+
+
+state 17
+
+   11 listaCampos: declaracionVariable .
+
+    $default  reduce using rule 11 (listaCampos)
+
+
+state 18
+
+    7 declaracionVariable: tipo . ID_ PUNTOYCOMA_
+    8                    | tipo . ID_ CORABR_ CTE_ CORCER_ PUNTOYCOMA_
+
+    ID_  shift, and go to state 24
+
+
+state 19
+
+   10 tipo: STRUCT_ LLAVABR_ listaCampos . LLAVCER_
+   12 listaCampos: listaCampos . declaracionVariable
+
+    LLAVCER_  shift, and go to state 25
+    INT_      shift, and go to state 4
+    STRUCT_   shift, and go to state 5
+
+    declaracionVariable  go to state 26
+    tipo                 go to state 18
+
+
+state 20
+
+    7 declaracionVariable: tipo ID_ PUNTOYCOMA_ .
+
+    $default  reduce using rule 7 (declaracionVariable)
+
+
+state 21
+
+   15 cabeceraFuncion: tipo ID_ PARABR_ . $@2 parametrosFormales PARCER_
+
+    $default  reduce using rule 14 ($@2)
+
+    $@2  go to state 27
+
+
+state 22
+
+    8 declaracionVariable: tipo ID_ CORABR_ . CTE_ CORCER_ PUNTOYCOMA_
+
+    CTE_  shift, and go to state 28
+
+
+state 23
+
+   20 bloque: LLAVABR_ declaracionVariableLocal . listaInstrucciones LLAVCER_
+   22 declaracionVariableLocal: declaracionVariableLocal . declaracionVariable
+
+    INT_     shift, and go to state 4
+    STRUCT_  shift, and go to state 5
+
+    $default  reduce using rule 23 (listaInstrucciones)
+
+    declaracionVariable  go to state 29
+    tipo                 go to state 18
+    listaInstrucciones   go to state 30
+
+
+state 24
+
+    7 declaracionVariable: tipo ID_ . PUNTOYCOMA_
+    8                    | tipo ID_ . CORABR_ CTE_ CORCER_ PUNTOYCOMA_
+
+    PUNTOYCOMA_  shift, and go to state 20
+    CORABR_      shift, and go to state 22
+
+
+state 25
+
+   10 tipo: STRUCT_ LLAVABR_ listaCampos LLAVCER_ .
+
+    $default  reduce using rule 10 (tipo)
+
+
+state 26
+
+   12 listaCampos: listaCampos declaracionVariable .
+
+    $default  reduce using rule 12 (listaCampos)
+
+
+state 27
+
+   15 cabeceraFuncion: tipo ID_ PARABR_ $@2 . parametrosFormales PARCER_
+
+    INT_     shift, and go to state 4
+    STRUCT_  shift, and go to state 5
+
+    $default  reduce using rule 16 (parametrosFormales)
+
+    tipo                     go to state 31
+    parametrosFormales       go to state 32
+    listaParametrosFormales  go to state 33
+
+
+state 28
+
+    8 declaracionVariable: tipo ID_ CORABR_ CTE_ . CORCER_ PUNTOYCOMA_
+
+    CORCER_  shift, and go to state 34
+
+
+state 29
+
+   22 declaracionVariableLocal: declaracionVariableLocal declaracionVariable .
+
+    $default  reduce using rule 22 (declaracionVariableLocal)
+
+
+state 30
+
+   20 bloque: LLAVABR_ declaracionVariableLocal listaInstrucciones . LLAVCER_
+   24 listaInstrucciones: listaInstrucciones . instruccion
+
+    PUNTOYCOMA_  shift, and go to state 35
+    PARABR_      shift, and go to state 36
+    LLAVCER_     shift, and go to state 37
+    READ_        shift, and go to state 38
+    PRINT_       shift, and go to state 39
+    IF_          shift, and go to state 40
+    FOR_         shift, and go to state 41
+    RETURN_      shift, and go to state 42
+    MAS_         shift, and go to state 43
+    MENOS_       shift, and go to state 44
+    INCMAS_      shift, and go to state 45
+    INCMENOS_    shift, and go to state 46
+    ID_          shift, and go to state 47
+    CTE_         shift, and go to state 48
+
+    $default  reduce using rule 25 ($@3)
+
+    instruccion               go to state 49
+    $@3                       go to state 50
+    instruccionExpresion      go to state 51
+    instruccionEntradaSalida  go to state 52
+    instruccionSeleccion      go to state 53
+    instruccionIteraccion     go to state 54
+    instruccionSalto          go to state 55
+    expresion                 go to state 56
+    expresionIgualdad         go to state 57
+    expresionRelacional       go to state 58
+    expresionAditiva          go to state 59
+    expresionMultiplicativa   go to state 60
+    expresionUnaria           go to state 61
+    expresionSufija           go to state 62
+    operadorIncremento        go to state 63
+    operadorUnario            go to state 64
+
+
+state 31
+
+   18 listaParametrosFormales: tipo . ID_
+   19                        | tipo . ID_ COMA_ listaParametrosFormales
+
+    ID_  shift, and go to state 65
+
+
+state 32
+
+   15 cabeceraFuncion: tipo ID_ PARABR_ $@2 parametrosFormales . PARCER_
+
+    PARCER_  shift, and go to state 66
+
+
+state 33
+
+   17 parametrosFormales: listaParametrosFormales .
+
+    $default  reduce using rule 17 (parametrosFormales)
+
+
+state 34
+
+    8 declaracionVariable: tipo ID_ CORABR_ CTE_ CORCER_ . PUNTOYCOMA_
+
+    PUNTOYCOMA_  shift, and go to state 67
+
+
+state 35
+
+   32 instruccionExpresion: PUNTOYCOMA_ .
+
+    $default  reduce using rule 32 (instruccionExpresion)
+
+
+state 36
+
+   60 expresionSufija: PARABR_ . expresion PARCER_
+
+    PARABR_    shift, and go to state 36
+    MAS_       shift, and go to state 43
+    MENOS_     shift, and go to state 44
+    INCMAS_    shift, and go to state 45
+    INCMENOS_  shift, and go to state 46
+    ID_        shift, and go to state 47
+    CTE_       shift, and go to state 48
+
+    expresion                go to state 68
+    expresionIgualdad        go to state 57
+    expresionRelacional      go to state 58
+    expresionAditiva         go to state 59
+    expresionMultiplicativa  go to state 60
+    expresionUnaria          go to state 61
+    expresionSufija          go to state 62
+    operadorIncremento       go to state 63
+    operadorUnario           go to state 64
+
+
+state 37
+
+   20 bloque: LLAVABR_ declaracionVariableLocal listaInstrucciones LLAVCER_ .
+
+    $default  reduce using rule 20 (bloque)
+
+
+state 38
+
+   34 instruccionEntradaSalida: READ_ . PARABR_ ID_ PARCER_ PUNTOYCOMA_
+
+    PARABR_  shift, and go to state 69
+
+
+state 39
+
+   35 instruccionEntradaSalida: PRINT_ . PARABR_ expresion PARCER_ PUNTOYCOMA_
+
+    PARABR_  shift, and go to state 70
+
+
+state 40
+
+   36 instruccionSeleccion: IF_ . PARABR_ expresion PARCER_ instruccion ELSE_ instruccion
+
+    PARABR_  shift, and go to state 71
+
+
+state 41
+
+   37 instruccionIteraccion: FOR_ . PARABR_ expresionOpcional PUNTOYCOMA_ expresion PUNTOYCOMA_ expresionOpcional PARCER_ instruccion
+
+    PARABR_  shift, and go to state 72
+
+
+state 42
+
+   40 instruccionSalto: RETURN_ . expresion PUNTOYCOMA_
+
+    PARABR_    shift, and go to state 36
+    MAS_       shift, and go to state 43
+    MENOS_     shift, and go to state 44
+    INCMAS_    shift, and go to state 45
+    INCMENOS_  shift, and go to state 46
+    ID_        shift, and go to state 47
+    CTE_       shift, and go to state 48
+
+    expresion                go to state 73
+    expresionIgualdad        go to state 57
+    expresionRelacional      go to state 58
+    expresionAditiva         go to state 59
+    expresionMultiplicativa  go to state 60
+    expresionUnaria          go to state 61
+    expresionSufija          go to state 62
+    operadorIncremento       go to state 63
+    operadorUnario           go to state 64
+
+
+state 43
+
+   82 operadorUnario: MAS_ .
+
+    $default  reduce using rule 82 (operadorUnario)
+
+
+state 44
+
+   83 operadorUnario: MENOS_ .
+
+    $default  reduce using rule 83 (operadorUnario)
+
+
+state 45
+
+   80 operadorIncremento: INCMAS_ .
+
+    $default  reduce using rule 80 (operadorIncremento)
+
+
+state 46
+
+   81 operadorIncremento: INCMENOS_ .
+
+    $default  reduce using rule 81 (operadorIncremento)
+
+
+state 47
+
+   42 expresion: ID_ . operadorAsignacion expresion
+   43          | ID_ . CORABR_ expresion CORCER_ operadorAsignacion expresion
+   44          | ID_ . PUNTO_ ID_ operadorAsignacion expresion
+   56 expresionSufija: ID_ . CORABR_ expresion CORCER_
+   57                | ID_ . PUNTO_ ID_
+   58                | ID_ . operadorIncremento
+   59                | ID_ . PARABR_ parametrosActuales PARCER_
+   61                | ID_ .
+
+    PUNTO_      shift, and go to state 74
+    PARABR_     shift, and go to state 75
+    CORABR_     shift, and go to state 76
+    INCMAS_     shift, and go to state 45
+    INCMENOS_   shift, and go to state 46
+    ASIG_       shift, and go to state 77
+    ASIGMAS_    shift, and go to state 78
+    ASIGMENOS_  shift, and go to state 79
+
+    $default  reduce using rule 61 (expresionSufija)
+
+    operadorAsignacion  go to state 80
+    operadorIncremento  go to state 81
+
+
+state 48
+
+   62 expresionSufija: CTE_ .
+
+    $default  reduce using rule 62 (expresionSufija)
+
+
+state 49
+
+   24 listaInstrucciones: listaInstrucciones instruccion .
+
+    $default  reduce using rule 24 (listaInstrucciones)
+
+
+state 50
+
+   26 instruccion: $@3 . LLAVABR_ declaracionVariableLocal listaInstrucciones LLAVCER_
+
+    LLAVABR_  shift, and go to state 82
+
+
+state 51
+
+   27 instruccion: instruccionExpresion .
+
+    $default  reduce using rule 27 (instruccion)
+
+
+state 52
+
+   28 instruccion: instruccionEntradaSalida .
+
+    $default  reduce using rule 28 (instruccion)
+
+
+state 53
+
+   29 instruccion: instruccionSeleccion .
+
+    $default  reduce using rule 29 (instruccion)
+
+
+state 54
+
+   30 instruccion: instruccionIteraccion .
+
+    $default  reduce using rule 30 (instruccion)
+
+
+state 55
+
+   31 instruccion: instruccionSalto .
+
+    $default  reduce using rule 31 (instruccion)
+
+
+state 56
+
+   33 instruccionExpresion: expresion . PUNTOYCOMA_
+
+    PUNTOYCOMA_  shift, and go to state 83
+
+
+state 57
+
+   41 expresion: expresionIgualdad .
+   46 expresionIgualdad: expresionIgualdad . operadorIgualdad expresionRelacional
+
+    IGUAL_  shift, and go to state 84
+    DIF_    shift, and go to state 85
+
+    $default  reduce using rule 41 (expresion)
+
+    operadorIgualdad  go to state 86
+
+
+state 58
+
+   45 expresionIgualdad: expresionRelacional .
+   48 expresionRelacional: expresionRelacional . operadorRelacional expresionAditiva
+
+    GT_   shift, and go to state 87
+    GTE_  shift, and go to state 88
+    LT_   shift, and go to state 89
+    LTE_  shift, and go to state 90
+
+    $default  reduce using rule 45 (expresionIgualdad)
+
+    operadorRelacional  go to state 91
+
+
+state 59
+
+   47 expresionRelacional: expresionAditiva .
+   50 expresionAditiva: expresionAditiva . operadorAditivo expresionMultiplicativa
+
+    MAS_    shift, and go to state 92
+    MENOS_  shift, and go to state 93
+
+    $default  reduce using rule 47 (expresionRelacional)
+
+    operadorAditivo  go to state 94
+
+
+state 60
+
+   49 expresionAditiva: expresionMultiplicativa .
+   52 expresionMultiplicativa: expresionMultiplicativa . operadorMultiplicativo expresionUnaria
+
+    POR_  shift, and go to state 95
+    DIV_  shift, and go to state 96
+
+    $default  reduce using rule 49 (expresionAditiva)
+
+    operadorMultiplicativo  go to state 97
+
+
+state 61
+
+   51 expresionMultiplicativa: expresionUnaria .
+
+    $default  reduce using rule 51 (expresionMultiplicativa)
+
+
+state 62
+
+   53 expresionUnaria: expresionSufija .
+
+    $default  reduce using rule 53 (expresionUnaria)
+
+
+state 63
+
+   55 expresionUnaria: operadorIncremento . ID_
+
+    ID_  shift, and go to state 98
+
+
+state 64
+
+   54 expresionUnaria: operadorUnario . expresionUnaria
+
+    PARABR_    shift, and go to state 36
+    MAS_       shift, and go to state 43
+    MENOS_     shift, and go to state 44
+    INCMAS_    shift, and go to state 45
+    INCMENOS_  shift, and go to state 46
+    ID_        shift, and go to state 99
+    CTE_       shift, and go to state 48
+
+    expresionUnaria     go to state 100
+    expresionSufija     go to state 62
+    operadorIncremento  go to state 63
+    operadorUnario      go to state 64
+
+
+state 65
+
+   18 listaParametrosFormales: tipo ID_ .
+   19                        | tipo ID_ . COMA_ listaParametrosFormales
+
+    COMA_  shift, and go to state 101
+
+    $default  reduce using rule 18 (listaParametrosFormales)
+
+
+state 66
+
+   15 cabeceraFuncion: tipo ID_ PARABR_ $@2 parametrosFormales PARCER_ .
+
+    $default  reduce using rule 15 (cabeceraFuncion)
+
+
+state 67
+
+    8 declaracionVariable: tipo ID_ CORABR_ CTE_ CORCER_ PUNTOYCOMA_ .
+
+    $default  reduce using rule 8 (declaracionVariable)
+
+
+state 68
+
+   60 expresionSufija: PARABR_ expresion . PARCER_
+
+    PARCER_  shift, and go to state 102
+
+
+state 69
+
+   34 instruccionEntradaSalida: READ_ PARABR_ . ID_ PARCER_ PUNTOYCOMA_
+
+    ID_  shift, and go to state 103
+
+
+state 70
+
+   35 instruccionEntradaSalida: PRINT_ PARABR_ . expresion PARCER_ PUNTOYCOMA_
+
+    PARABR_    shift, and go to state 36
+    MAS_       shift, and go to state 43
+    MENOS_     shift, and go to state 44
+    INCMAS_    shift, and go to state 45
+    INCMENOS_  shift, and go to state 46
+    ID_        shift, and go to state 47
+    CTE_       shift, and go to state 48
+
+    expresion                go to state 104
+    expresionIgualdad        go to state 57
+    expresionRelacional      go to state 58
+    expresionAditiva         go to state 59
+    expresionMultiplicativa  go to state 60
+    expresionUnaria          go to state 61
+    expresionSufija          go to state 62
+    operadorIncremento       go to state 63
+    operadorUnario           go to state 64
+
+
+state 71
+
+   36 instruccionSeleccion: IF_ PARABR_ . expresion PARCER_ instruccion ELSE_ instruccion
+
+    PARABR_    shift, and go to state 36
+    MAS_       shift, and go to state 43
+    MENOS_     shift, and go to state 44
+    INCMAS_    shift, and go to state 45
+    INCMENOS_  shift, and go to state 46
+    ID_        shift, and go to state 47
+    CTE_       shift, and go to state 48
+
+    expresion                go to state 105
+    expresionIgualdad        go to state 57
+    expresionRelacional      go to state 58
+    expresionAditiva         go to state 59
+    expresionMultiplicativa  go to state 60
+    expresionUnaria          go to state 61
+    expresionSufija          go to state 62
+    operadorIncremento       go to state 63
+    operadorUnario           go to state 64
+
+
+state 72
+
+   37 instruccionIteraccion: FOR_ PARABR_ . expresionOpcional PUNTOYCOMA_ expresion PUNTOYCOMA_ expresionOpcional PARCER_ instruccion
+
+    PARABR_    shift, and go to state 36
+    MAS_       shift, and go to state 43
+    MENOS_     shift, and go to state 44
+    INCMAS_    shift, and go to state 45
+    INCMENOS_  shift, and go to state 46
+    ID_        shift, and go to state 47
+    CTE_       shift, and go to state 48
+
+    $default  reduce using rule 38 (expresionOpcional)
+
+    expresionOpcional        go to state 106
+    expresion                go to state 107
+    expresionIgualdad        go to state 57
+    expresionRelacional      go to state 58
+    expresionAditiva         go to state 59
+    expresionMultiplicativa  go to state 60
+    expresionUnaria          go to state 61
+    expresionSufija          go to state 62
+    operadorIncremento       go to state 63
+    operadorUnario           go to state 64
+
+
+state 73
+
+   40 instruccionSalto: RETURN_ expresion . PUNTOYCOMA_
+
+    PUNTOYCOMA_  shift, and go to state 108
+
+
+state 74
+
+   44 expresion: ID_ PUNTO_ . ID_ operadorAsignacion expresion
+   57 expresionSufija: ID_ PUNTO_ . ID_
+
+    ID_  shift, and go to state 109
+
+
+state 75
+
+   59 expresionSufija: ID_ PARABR_ . parametrosActuales PARCER_
+
+    PARABR_    shift, and go to state 36
+    MAS_       shift, and go to state 43
+    MENOS_     shift, and go to state 44
+    INCMAS_    shift, and go to state 45
+    INCMENOS_  shift, and go to state 46
+    ID_        shift, and go to state 47
+    CTE_       shift, and go to state 48
+
+    $default  reduce using rule 63 (parametrosActuales)
+
+    expresion                go to state 110
+    expresionIgualdad        go to state 57
+    expresionRelacional      go to state 58
+    expresionAditiva         go to state 59
+    expresionMultiplicativa  go to state 60
+    expresionUnaria          go to state 61
+    expresionSufija          go to state 62
+    parametrosActuales       go to state 111
+    listaParametrosActuales  go to state 112
+    operadorIncremento       go to state 63
+    operadorUnario           go to state 64
+
+
+state 76
+
+   43 expresion: ID_ CORABR_ . expresion CORCER_ operadorAsignacion expresion
+   56 expresionSufija: ID_ CORABR_ . expresion CORCER_
+
+    PARABR_    shift, and go to state 36
+    MAS_       shift, and go to state 43
+    MENOS_     shift, and go to state 44
+    INCMAS_    shift, and go to state 45
+    INCMENOS_  shift, and go to state 46
+    ID_        shift, and go to state 47
+    CTE_       shift, and go to state 48
+
+    expresion                go to state 113
+    expresionIgualdad        go to state 57
+    expresionRelacional      go to state 58
+    expresionAditiva         go to state 59
+    expresionMultiplicativa  go to state 60
+    expresionUnaria          go to state 61
+    expresionSufija          go to state 62
+    operadorIncremento       go to state 63
+    operadorUnario           go to state 64
+
+
+state 77
+
+   67 operadorAsignacion: ASIG_ .
+
+    $default  reduce using rule 67 (operadorAsignacion)
+
+
+state 78
+
+   68 operadorAsignacion: ASIGMAS_ .
+
+    $default  reduce using rule 68 (operadorAsignacion)
+
+
+state 79
+
+   69 operadorAsignacion: ASIGMENOS_ .
+
+    $default  reduce using rule 69 (operadorAsignacion)
+
+
+state 80
+
+   42 expresion: ID_ operadorAsignacion . expresion
+
+    PARABR_    shift, and go to state 36
+    MAS_       shift, and go to state 43
+    MENOS_     shift, and go to state 44
+    INCMAS_    shift, and go to state 45
+    INCMENOS_  shift, and go to state 46
+    ID_        shift, and go to state 47
+    CTE_       shift, and go to state 48
+
+    expresion                go to state 114
+    expresionIgualdad        go to state 57
+    expresionRelacional      go to state 58
+    expresionAditiva         go to state 59
+    expresionMultiplicativa  go to state 60
+    expresionUnaria          go to state 61
+    expresionSufija          go to state 62
+    operadorIncremento       go to state 63
+    operadorUnario           go to state 64
+
+
+state 81
+
+   58 expresionSufija: ID_ operadorIncremento .
+
+    $default  reduce using rule 58 (expresionSufija)
+
+
+state 82
+
+   26 instruccion: $@3 LLAVABR_ . declaracionVariableLocal listaInstrucciones LLAVCER_
+
+    $default  reduce using rule 21 (declaracionVariableLocal)
+
+    declaracionVariableLocal  go to state 115
+
+
+state 83
+
+   33 instruccionExpresion: expresion PUNTOYCOMA_ .
+
+    $default  reduce using rule 33 (instruccionExpresion)
+
+
+state 84
+
+   70 operadorIgualdad: IGUAL_ .
+
+    $default  reduce using rule 70 (operadorIgualdad)
+
+
+state 85
+
+   71 operadorIgualdad: DIF_ .
+
+    $default  reduce using rule 71 (operadorIgualdad)
+
+
+state 86
+
+   46 expresionIgualdad: expresionIgualdad operadorIgualdad . expresionRelacional
+
+    PARABR_    shift, and go to state 36
+    MAS_       shift, and go to state 43
+    MENOS_     shift, and go to state 44
+    INCMAS_    shift, and go to state 45
+    INCMENOS_  shift, and go to state 46
+    ID_        shift, and go to state 99
+    CTE_       shift, and go to state 48
+
+    expresionRelacional      go to state 116
+    expresionAditiva         go to state 59
+    expresionMultiplicativa  go to state 60
+    expresionUnaria          go to state 61
+    expresionSufija          go to state 62
+    operadorIncremento       go to state 63
+    operadorUnario           go to state 64
+
+
+state 87
+
+   72 operadorRelacional: GT_ .
+
+    $default  reduce using rule 72 (operadorRelacional)
+
+
+state 88
+
+   73 operadorRelacional: GTE_ .
+
+    $default  reduce using rule 73 (operadorRelacional)
+
+
+state 89
+
+   74 operadorRelacional: LT_ .
+
+    $default  reduce using rule 74 (operadorRelacional)
+
+
+state 90
+
+   75 operadorRelacional: LTE_ .
+
+    $default  reduce using rule 75 (operadorRelacional)
+
+
+state 91
+
+   48 expresionRelacional: expresionRelacional operadorRelacional . expresionAditiva
+
+    PARABR_    shift, and go to state 36
+    MAS_       shift, and go to state 43
+    MENOS_     shift, and go to state 44
+    INCMAS_    shift, and go to state 45
+    INCMENOS_  shift, and go to state 46
+    ID_        shift, and go to state 99
+    CTE_       shift, and go to state 48
+
+    expresionAditiva         go to state 117
+    expresionMultiplicativa  go to state 60
+    expresionUnaria          go to state 61
+    expresionSufija          go to state 62
+    operadorIncremento       go to state 63
+    operadorUnario           go to state 64
+
+
+state 92
+
+   76 operadorAditivo: MAS_ .
+
+    $default  reduce using rule 76 (operadorAditivo)
+
+
+state 93
+
+   77 operadorAditivo: MENOS_ .
+
+    $default  reduce using rule 77 (operadorAditivo)
+
+
+state 94
+
+   50 expresionAditiva: expresionAditiva operadorAditivo . expresionMultiplicativa
+
+    PARABR_    shift, and go to state 36
+    MAS_       shift, and go to state 43
+    MENOS_     shift, and go to state 44
+    INCMAS_    shift, and go to state 45
+    INCMENOS_  shift, and go to state 46
+    ID_        shift, and go to state 99
+    CTE_       shift, and go to state 48
+
+    expresionMultiplicativa  go to state 118
+    expresionUnaria          go to state 61
+    expresionSufija          go to state 62
+    operadorIncremento       go to state 63
+    operadorUnario           go to state 64
+
+
+state 95
+
+   78 operadorMultiplicativo: POR_ .
+
+    $default  reduce using rule 78 (operadorMultiplicativo)
+
+
+state 96
+
+   79 operadorMultiplicativo: DIV_ .
+
+    $default  reduce using rule 79 (operadorMultiplicativo)
+
+
+state 97
+
+   52 expresionMultiplicativa: expresionMultiplicativa operadorMultiplicativo . expresionUnaria
+
+    PARABR_    shift, and go to state 36
+    MAS_       shift, and go to state 43
+    MENOS_     shift, and go to state 44
+    INCMAS_    shift, and go to state 45
+    INCMENOS_  shift, and go to state 46
+    ID_        shift, and go to state 99
+    CTE_       shift, and go to state 48
+
+    expresionUnaria     go to state 119
+    expresionSufija     go to state 62
+    operadorIncremento  go to state 63
+    operadorUnario      go to state 64
+
+
+state 98
+
+   55 expresionUnaria: operadorIncremento ID_ .
+
+    $default  reduce using rule 55 (expresionUnaria)
+
+
+state 99
+
+   56 expresionSufija: ID_ . CORABR_ expresion CORCER_
+   57                | ID_ . PUNTO_ ID_
+   58                | ID_ . operadorIncremento
+   59                | ID_ . PARABR_ parametrosActuales PARCER_
+   61                | ID_ .
+
+    PUNTO_     shift, and go to state 120
+    PARABR_    shift, and go to state 75
+    CORABR_    shift, and go to state 121
+    INCMAS_    shift, and go to state 45
+    INCMENOS_  shift, and go to state 46
+
+    $default  reduce using rule 61 (expresionSufija)
+
+    operadorIncremento  go to state 81
+
+
+state 100
+
+   54 expresionUnaria: operadorUnario expresionUnaria .
+
+    $default  reduce using rule 54 (expresionUnaria)
+
+
+state 101
+
+   19 listaParametrosFormales: tipo ID_ COMA_ . listaParametrosFormales
+
+    INT_     shift, and go to state 4
+    STRUCT_  shift, and go to state 5
+
+    tipo                     go to state 31
+    listaParametrosFormales  go to state 122
+
+
+state 102
+
+   60 expresionSufija: PARABR_ expresion PARCER_ .
+
+    $default  reduce using rule 60 (expresionSufija)
+
+
+state 103
+
+   34 instruccionEntradaSalida: READ_ PARABR_ ID_ . PARCER_ PUNTOYCOMA_
+
+    PARCER_  shift, and go to state 123
+
+
+state 104
+
+   35 instruccionEntradaSalida: PRINT_ PARABR_ expresion . PARCER_ PUNTOYCOMA_
+
+    PARCER_  shift, and go to state 124
+
+
+state 105
+
+   36 instruccionSeleccion: IF_ PARABR_ expresion . PARCER_ instruccion ELSE_ instruccion
+
+    PARCER_  shift, and go to state 125
+
+
+state 106
+
+   37 instruccionIteraccion: FOR_ PARABR_ expresionOpcional . PUNTOYCOMA_ expresion PUNTOYCOMA_ expresionOpcional PARCER_ instruccion
+
+    PUNTOYCOMA_  shift, and go to state 126
+
+
+state 107
+
+   39 expresionOpcional: expresion .
+
+    $default  reduce using rule 39 (expresionOpcional)
+
+
+state 108
+
+   40 instruccionSalto: RETURN_ expresion PUNTOYCOMA_ .
+
+    $default  reduce using rule 40 (instruccionSalto)
+
+
+state 109
+
+   44 expresion: ID_ PUNTO_ ID_ . operadorAsignacion expresion
+   57 expresionSufija: ID_ PUNTO_ ID_ .
+
+    ASIG_       shift, and go to state 77
+    ASIGMAS_    shift, and go to state 78
+    ASIGMENOS_  shift, and go to state 79
+
+    $default  reduce using rule 57 (expresionSufija)
+
+    operadorAsignacion  go to state 127
+
+
+state 110
+
+   65 listaParametrosActuales: expresion .
+   66                        | expresion . COMA_ listaParametrosActuales
+
+    COMA_  shift, and go to state 128
+
+    $default  reduce using rule 65 (listaParametrosActuales)
+
+
+state 111
+
+   59 expresionSufija: ID_ PARABR_ parametrosActuales . PARCER_
+
+    PARCER_  shift, and go to state 129
+
+
+state 112
+
+   64 parametrosActuales: listaParametrosActuales .
+
+    $default  reduce using rule 64 (parametrosActuales)
+
+
+state 113
+
+   43 expresion: ID_ CORABR_ expresion . CORCER_ operadorAsignacion expresion
+   56 expresionSufija: ID_ CORABR_ expresion . CORCER_
+
+    CORCER_  shift, and go to state 130
+
+
+state 114
+
+   42 expresion: ID_ operadorAsignacion expresion .
+
+    $default  reduce using rule 42 (expresion)
+
+
+state 115
+
+   22 declaracionVariableLocal: declaracionVariableLocal . declaracionVariable
+   26 instruccion: $@3 LLAVABR_ declaracionVariableLocal . listaInstrucciones LLAVCER_
+
+    INT_     shift, and go to state 4
+    STRUCT_  shift, and go to state 5
+
+    $default  reduce using rule 23 (listaInstrucciones)
+
+    declaracionVariable  go to state 29
+    tipo                 go to state 18
+    listaInstrucciones   go to state 131
+
+
+state 116
+
+   46 expresionIgualdad: expresionIgualdad operadorIgualdad expresionRelacional .
+   48 expresionRelacional: expresionRelacional . operadorRelacional expresionAditiva
+
+    GT_   shift, and go to state 87
+    GTE_  shift, and go to state 88
+    LT_   shift, and go to state 89
+    LTE_  shift, and go to state 90
+
+    $default  reduce using rule 46 (expresionIgualdad)
+
+    operadorRelacional  go to state 91
+
+
+state 117
+
+   48 expresionRelacional: expresionRelacional operadorRelacional expresionAditiva .
+   50 expresionAditiva: expresionAditiva . operadorAditivo expresionMultiplicativa
+
+    MAS_    shift, and go to state 92
+    MENOS_  shift, and go to state 93
+
+    $default  reduce using rule 48 (expresionRelacional)
+
+    operadorAditivo  go to state 94
+
+
+state 118
+
+   50 expresionAditiva: expresionAditiva operadorAditivo expresionMultiplicativa .
+   52 expresionMultiplicativa: expresionMultiplicativa . operadorMultiplicativo expresionUnaria
+
+    POR_  shift, and go to state 95
+    DIV_  shift, and go to state 96
+
+    $default  reduce using rule 50 (expresionAditiva)
+
+    operadorMultiplicativo  go to state 97
+
+
+state 119
+
+   52 expresionMultiplicativa: expresionMultiplicativa operadorMultiplicativo expresionUnaria .
+
+    $default  reduce using rule 52 (expresionMultiplicativa)
+
+
+state 120
+
+   57 expresionSufija: ID_ PUNTO_ . ID_
+
+    ID_  shift, and go to state 132
+
+
+state 121
+
+   56 expresionSufija: ID_ CORABR_ . expresion CORCER_
+
+    PARABR_    shift, and go to state 36
+    MAS_       shift, and go to state 43
+    MENOS_     shift, and go to state 44
+    INCMAS_    shift, and go to state 45
+    INCMENOS_  shift, and go to state 46
+    ID_        shift, and go to state 47
+    CTE_       shift, and go to state 48
+
+    expresion                go to state 133
+    expresionIgualdad        go to state 57
+    expresionRelacional      go to state 58
+    expresionAditiva         go to state 59
+    expresionMultiplicativa  go to state 60
+    expresionUnaria          go to state 61
+    expresionSufija          go to state 62
+    operadorIncremento       go to state 63
+    operadorUnario           go to state 64
+
+
+state 122
+
+   19 listaParametrosFormales: tipo ID_ COMA_ listaParametrosFormales .
+
+    $default  reduce using rule 19 (listaParametrosFormales)
+
+
+state 123
+
+   34 instruccionEntradaSalida: READ_ PARABR_ ID_ PARCER_ . PUNTOYCOMA_
+
+    PUNTOYCOMA_  shift, and go to state 134
+
+
+state 124
+
+   35 instruccionEntradaSalida: PRINT_ PARABR_ expresion PARCER_ . PUNTOYCOMA_
+
+    PUNTOYCOMA_  shift, and go to state 135
+
+
+state 125
+
+   36 instruccionSeleccion: IF_ PARABR_ expresion PARCER_ . instruccion ELSE_ instruccion
+
+    PUNTOYCOMA_  shift, and go to state 35
+    PARABR_      shift, and go to state 36
+    READ_        shift, and go to state 38
+    PRINT_       shift, and go to state 39
+    IF_          shift, and go to state 40
+    FOR_         shift, and go to state 41
+    RETURN_      shift, and go to state 42
+    MAS_         shift, and go to state 43
+    MENOS_       shift, and go to state 44
+    INCMAS_      shift, and go to state 45
+    INCMENOS_    shift, and go to state 46
+    ID_          shift, and go to state 47
+    CTE_         shift, and go to state 48
+
+    $default  reduce using rule 25 ($@3)
+
+    instruccion               go to state 136
+    $@3                       go to state 50
+    instruccionExpresion      go to state 51
+    instruccionEntradaSalida  go to state 52
+    instruccionSeleccion      go to state 53
+    instruccionIteraccion     go to state 54
+    instruccionSalto          go to state 55
+    expresion                 go to state 56
+    expresionIgualdad         go to state 57
+    expresionRelacional       go to state 58
+    expresionAditiva          go to state 59
+    expresionMultiplicativa   go to state 60
+    expresionUnaria           go to state 61
+    expresionSufija           go to state 62
+    operadorIncremento        go to state 63
+    operadorUnario            go to state 64
+
+
+state 126
+
+   37 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ . expresion PUNTOYCOMA_ expresionOpcional PARCER_ instruccion
+
+    PARABR_    shift, and go to state 36
+    MAS_       shift, and go to state 43
+    MENOS_     shift, and go to state 44
+    INCMAS_    shift, and go to state 45
+    INCMENOS_  shift, and go to state 46
+    ID_        shift, and go to state 47
+    CTE_       shift, and go to state 48
+
+    expresion                go to state 137
+    expresionIgualdad        go to state 57
+    expresionRelacional      go to state 58
+    expresionAditiva         go to state 59
+    expresionMultiplicativa  go to state 60
+    expresionUnaria          go to state 61
+    expresionSufija          go to state 62
+    operadorIncremento       go to state 63
+    operadorUnario           go to state 64
+
+
+state 127
+
+   44 expresion: ID_ PUNTO_ ID_ operadorAsignacion . expresion
+
+    PARABR_    shift, and go to state 36
+    MAS_       shift, and go to state 43
+    MENOS_     shift, and go to state 44
+    INCMAS_    shift, and go to state 45
+    INCMENOS_  shift, and go to state 46
+    ID_        shift, and go to state 47
+    CTE_       shift, and go to state 48
+
+    expresion                go to state 138
+    expresionIgualdad        go to state 57
+    expresionRelacional      go to state 58
+    expresionAditiva         go to state 59
+    expresionMultiplicativa  go to state 60
+    expresionUnaria          go to state 61
+    expresionSufija          go to state 62
+    operadorIncremento       go to state 63
+    operadorUnario           go to state 64
+
+
+state 128
+
+   66 listaParametrosActuales: expresion COMA_ . listaParametrosActuales
+
+    PARABR_    shift, and go to state 36
+    MAS_       shift, and go to state 43
+    MENOS_     shift, and go to state 44
+    INCMAS_    shift, and go to state 45
+    INCMENOS_  shift, and go to state 46
+    ID_        shift, and go to state 47
+    CTE_       shift, and go to state 48
+
+    expresion                go to state 110
+    expresionIgualdad        go to state 57
+    expresionRelacional      go to state 58
+    expresionAditiva         go to state 59
+    expresionMultiplicativa  go to state 60
+    expresionUnaria          go to state 61
+    expresionSufija          go to state 62
+    listaParametrosActuales  go to state 139
+    operadorIncremento       go to state 63
+    operadorUnario           go to state 64
+
+
+state 129
+
+   59 expresionSufija: ID_ PARABR_ parametrosActuales PARCER_ .
+
+    $default  reduce using rule 59 (expresionSufija)
+
+
+state 130
+
+   43 expresion: ID_ CORABR_ expresion CORCER_ . operadorAsignacion expresion
+   56 expresionSufija: ID_ CORABR_ expresion CORCER_ .
+
+    ASIG_       shift, and go to state 77
+    ASIGMAS_    shift, and go to state 78
+    ASIGMENOS_  shift, and go to state 79
+
+    $default  reduce using rule 56 (expresionSufija)
+
+    operadorAsignacion  go to state 140
+
+
+state 131
+
+   24 listaInstrucciones: listaInstrucciones . instruccion
+   26 instruccion: $@3 LLAVABR_ declaracionVariableLocal listaInstrucciones . LLAVCER_
+
+    PUNTOYCOMA_  shift, and go to state 35
+    PARABR_      shift, and go to state 36
+    LLAVCER_     shift, and go to state 141
+    READ_        shift, and go to state 38
+    PRINT_       shift, and go to state 39
+    IF_          shift, and go to state 40
+    FOR_         shift, and go to state 41
+    RETURN_      shift, and go to state 42
+    MAS_         shift, and go to state 43
+    MENOS_       shift, and go to state 44
+    INCMAS_      shift, and go to state 45
+    INCMENOS_    shift, and go to state 46
+    ID_          shift, and go to state 47
+    CTE_         shift, and go to state 48
+
+    $default  reduce using rule 25 ($@3)
+
+    instruccion               go to state 49
+    $@3                       go to state 50
+    instruccionExpresion      go to state 51
+    instruccionEntradaSalida  go to state 52
+    instruccionSeleccion      go to state 53
+    instruccionIteraccion     go to state 54
+    instruccionSalto          go to state 55
+    expresion                 go to state 56
+    expresionIgualdad         go to state 57
+    expresionRelacional       go to state 58
+    expresionAditiva          go to state 59
+    expresionMultiplicativa   go to state 60
+    expresionUnaria           go to state 61
+    expresionSufija           go to state 62
+    operadorIncremento        go to state 63
+    operadorUnario            go to state 64
+
+
+state 132
+
+   57 expresionSufija: ID_ PUNTO_ ID_ .
+
+    $default  reduce using rule 57 (expresionSufija)
+
+
+state 133
+
+   56 expresionSufija: ID_ CORABR_ expresion . CORCER_
+
+    CORCER_  shift, and go to state 142
+
+
+state 134
+
+   34 instruccionEntradaSalida: READ_ PARABR_ ID_ PARCER_ PUNTOYCOMA_ .
+
+    $default  reduce using rule 34 (instruccionEntradaSalida)
+
+
+state 135
+
+   35 instruccionEntradaSalida: PRINT_ PARABR_ expresion PARCER_ PUNTOYCOMA_ .
+
+    $default  reduce using rule 35 (instruccionEntradaSalida)
+
+
+state 136
+
+   36 instruccionSeleccion: IF_ PARABR_ expresion PARCER_ instruccion . ELSE_ instruccion
+
+    ELSE_  shift, and go to state 143
+
+
+state 137
+
+   37 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ expresion . PUNTOYCOMA_ expresionOpcional PARCER_ instruccion
+
+    PUNTOYCOMA_  shift, and go to state 144
+
+
+state 138
+
+   44 expresion: ID_ PUNTO_ ID_ operadorAsignacion expresion .
+
+    $default  reduce using rule 44 (expresion)
+
+
+state 139
+
+   66 listaParametrosActuales: expresion COMA_ listaParametrosActuales .
+
+    $default  reduce using rule 66 (listaParametrosActuales)
+
+
+state 140
+
+   43 expresion: ID_ CORABR_ expresion CORCER_ operadorAsignacion . expresion
+
+    PARABR_    shift, and go to state 36
+    MAS_       shift, and go to state 43
+    MENOS_     shift, and go to state 44
+    INCMAS_    shift, and go to state 45
+    INCMENOS_  shift, and go to state 46
+    ID_        shift, and go to state 47
+    CTE_       shift, and go to state 48
+
+    expresion                go to state 145
+    expresionIgualdad        go to state 57
+    expresionRelacional      go to state 58
+    expresionAditiva         go to state 59
+    expresionMultiplicativa  go to state 60
+    expresionUnaria          go to state 61
+    expresionSufija          go to state 62
+    operadorIncremento       go to state 63
+    operadorUnario           go to state 64
+
+
+state 141
+
+   26 instruccion: $@3 LLAVABR_ declaracionVariableLocal listaInstrucciones LLAVCER_ .
+
+    $default  reduce using rule 26 (instruccion)
+
+
+state 142
+
+   56 expresionSufija: ID_ CORABR_ expresion CORCER_ .
+
+    $default  reduce using rule 56 (expresionSufija)
+
+
+state 143
+
+   36 instruccionSeleccion: IF_ PARABR_ expresion PARCER_ instruccion ELSE_ . instruccion
+
+    PUNTOYCOMA_  shift, and go to state 35
+    PARABR_      shift, and go to state 36
+    READ_        shift, and go to state 38
+    PRINT_       shift, and go to state 39
+    IF_          shift, and go to state 40
+    FOR_         shift, and go to state 41
+    RETURN_      shift, and go to state 42
+    MAS_         shift, and go to state 43
+    MENOS_       shift, and go to state 44
+    INCMAS_      shift, and go to state 45
+    INCMENOS_    shift, and go to state 46
+    ID_          shift, and go to state 47
+    CTE_         shift, and go to state 48
+
+    $default  reduce using rule 25 ($@3)
+
+    instruccion               go to state 146
+    $@3                       go to state 50
+    instruccionExpresion      go to state 51
+    instruccionEntradaSalida  go to state 52
+    instruccionSeleccion      go to state 53
+    instruccionIteraccion     go to state 54
+    instruccionSalto          go to state 55
+    expresion                 go to state 56
+    expresionIgualdad         go to state 57
+    expresionRelacional       go to state 58
+    expresionAditiva          go to state 59
+    expresionMultiplicativa   go to state 60
+    expresionUnaria           go to state 61
+    expresionSufija           go to state 62
+    operadorIncremento        go to state 63
+    operadorUnario            go to state 64
+
+
+state 144
+
+   37 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ expresion PUNTOYCOMA_ . expresionOpcional PARCER_ instruccion
+
+    PARABR_    shift, and go to state 36
+    MAS_       shift, and go to state 43
+    MENOS_     shift, and go to state 44
+    INCMAS_    shift, and go to state 45
+    INCMENOS_  shift, and go to state 46
+    ID_        shift, and go to state 47
+    CTE_       shift, and go to state 48
+
+    $default  reduce using rule 38 (expresionOpcional)
+
+    expresionOpcional        go to state 147
+    expresion                go to state 107
+    expresionIgualdad        go to state 57
+    expresionRelacional      go to state 58
+    expresionAditiva         go to state 59
+    expresionMultiplicativa  go to state 60
+    expresionUnaria          go to state 61
+    expresionSufija          go to state 62
+    operadorIncremento       go to state 63
+    operadorUnario           go to state 64
+
+
+state 145
+
+   43 expresion: ID_ CORABR_ expresion CORCER_ operadorAsignacion expresion .
+
+    $default  reduce using rule 43 (expresion)
+
+
+state 146
+
+   36 instruccionSeleccion: IF_ PARABR_ expresion PARCER_ instruccion ELSE_ instruccion .
+
+    $default  reduce using rule 36 (instruccionSeleccion)
+
+
+state 147
+
+   37 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ expresion PUNTOYCOMA_ expresionOpcional . PARCER_ instruccion
+
+    PARCER_  shift, and go to state 148
+
+
+state 148
+
+   37 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ expresion PUNTOYCOMA_ expresionOpcional PARCER_ . instruccion
+
+    PUNTOYCOMA_  shift, and go to state 35
+    PARABR_      shift, and go to state 36
+    READ_        shift, and go to state 38
+    PRINT_       shift, and go to state 39
+    IF_          shift, and go to state 40
+    FOR_         shift, and go to state 41
+    RETURN_      shift, and go to state 42
+    MAS_         shift, and go to state 43
+    MENOS_       shift, and go to state 44
+    INCMAS_      shift, and go to state 45
+    INCMENOS_    shift, and go to state 46
+    ID_          shift, and go to state 47
+    CTE_         shift, and go to state 48
+
+    $default  reduce using rule 25 ($@3)
+
+    instruccion               go to state 149
+    $@3                       go to state 50
+    instruccionExpresion      go to state 51
+    instruccionEntradaSalida  go to state 52
+    instruccionSeleccion      go to state 53
+    instruccionIteraccion     go to state 54
+    instruccionSalto          go to state 55
+    expresion                 go to state 56
+    expresionIgualdad         go to state 57
+    expresionRelacional       go to state 58
+    expresionAditiva          go to state 59
+    expresionMultiplicativa   go to state 60
+    expresionUnaria           go to state 61
+    expresionSufija           go to state 62
+    operadorIncremento        go to state 63
+    operadorUnario            go to state 64
+
+
+state 149
+
+   37 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ expresion PUNTOYCOMA_ expresionOpcional PARCER_ instruccion .
+
+    $default  reduce using rule 37 (instruccionIteraccion)

@@ -83,7 +83,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 40 "asin.y"
+#line 37 "asin.y"
 
   char* ident;  
   /* Para los identificadores  */

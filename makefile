@@ -1,11 +1,21 @@
-cmc: alex.o asin.o
-	gcc -o cmc alex.o asin.o -L./lib -I./include -lfl -ltds
-asin.o: asin.c
-	gcc -c asin.c -I./include
-alex.o: alex.c asin.c
-	gcc -c alex.c -I./include
-asin.c: asin.y
-	bison -oasin.c -d asin.y
-	mv asin.h ./include
+FLEX=flex
+BISON=bison
+FFLAGS=-lfl
+TDSFLAGS=-L./lib -I./include -ltds -lgci
+CC=gcc
+DEBUGFLAG=-t
+VERBFLAG=-v
+
+all:cmc
+
 alex.c: alex.l
-	flex -oalex.c alex.l
+	$(FLEX) -o$@ $<
+
+asin.c: asin.y
+	$(BISON) $(DEBUGFLAG) $(VERBFLAG) -o$@ -d $<
+
+cmc: asin.c alex.c
+	$(CC) -g -o$@ $^ $(TDSFLAGS) $(FFLAGS) 
+
+clean:
+	rm -f asin.c alex.c cmc *.o 

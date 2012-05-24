@@ -110,6 +110,8 @@ declaracion: declaracionVariable
 			dvar += $1.talla; // update shift
 		}
 		
+		mostrarTDS(nivel);
+		
 	}
   | declaracionFuncion 
 	{
@@ -255,14 +257,25 @@ listaParametrosFormales: tipo ID_
 				dpar += $1.talla;
 			}
 			$$.ref = insertaInfoDominio($4.ref, $1.tipo);
-			mostrarTDS(nivel);
+			//mostrarTDS(nivel);
 		}
   	} 
 ;
 bloque: LLAVABR_ declaracionVariableLocal listaInstrucciones LLAVCER_
 ;
-declaracionVariableLocal:
+declaracionVariableLocal: {mostrarTDS(nivel);}
   | declaracionVariableLocal declaracionVariable
+  	{
+		printf("\ndeclarando var %s", $2.id);
+		if(!insertaSimbolo($2.id, VARIABLE, $2.tipo, dvar, nivel, $2.ref)){
+			yyerror("---> identificador repetido");
+		} else {
+			dvar += $2.talla; // update shift
+		}
+		
+		mostrarTDS(nivel);
+		
+	}
 ;
 listaInstrucciones: 
   | listaInstrucciones instruccion
@@ -312,32 +325,105 @@ expresion: expresionIgualdad
   	{
   		$$.val = $3.val;
   		
-  		SIMB sim;
-		sim = obtenerSimbolo($1);
-		if (sim.categoria == NULO){
+  		SIMB id;
+		id = obtenerSimbolo($1);
+		if (id.categoria == NULO){
 			yyerror("Identificador no declarado");
 		}
-		if ((sim.tipo==$3.tipo)&&(sim.tipo==T_ENTERO)){ 
+		if ((id.tipo==$3.tipo)&&(id.tipo==T_ENTERO)){ 
 			$$.tipo = T_ENTERO;
 		}
 		else {
 		
-			if (($3.tipo!=T_ERROR)&&(sim.tipo!=T_ERROR)){
+			if (($3.tipo!=T_ERROR)&&(id.tipo!=T_ERROR)){
 				yyerror("Error de tipos en la asignacion de la ((expresion))");
 			}
 			$$.tipo=T_ERROR;
 		}
+		
+		TIPO_ARG id_arg = crArgPosicion(id.nivel, id.desp);
+		TIPO_ARG exp_arg = $3;
+		
+		
+		switch($2){
+			case MASASIG: // id = id + exp
+				emite(ESUM, id_arg, exp_arg, id_arg);
+				printf("\nemite asignacion de variable %s+=%d", $1, id_arg.val.i);
+				break;
+			case MENOSASIG:
+				emite(EDIF, id_arg, exp_arg, id_arg);
+				printf("\nemite asignacion de variable %s-=%d", $1, id_arg.val.i);
+				break;
+			case ASIG:
+				emite(EASIG, exp_arg, crArgNulo(), id_arg);
+				printf("\nemite asignacion de variable %s=%d", $1, id_arg.val.i);
+				break;
+
+		}
+		
+		//printf("\nemite asignacion de variable para %s (sube valor arriba)", $1);
+		//emite(EASIG, id_arg, crArgNulo(), $$);
+		$$ = id_arg;
 		
   		
   		
   	}
   | ID_ CORABR_ expresion CORCER_ operadorAsignacion expresion
   	{
-  		$$.val = $6.val;
-  	}
+		SIMB id;
+		
+		id = obtenerSimbolo($1);
+		if(id.categoria==NULO){
+			yyerror("variable array no declarada");	
+			$$.tipo = T_ERROR;
+		} else {
+			TIPO_ARG indice = $3; //indice
+			TIPO_ARG valor = $6; // valor de la expresion para asignar
+			TIPO_ARG elem = crArgPosicion(nivel, creaVarTemp()); //variable por el valor del elemento id[expresion]
+			TIPO_ARG id_arg = crArgPosicion(id.nivel, id.desp);
+			
+			//leo el elemento del array
+			emite(EAV, id_arg, indice, elem);
+			
+			switch($5){
+				case MASASIG: 
+					emite(ESUM, valor, elem, elem);
+					break;
+				case MENOSASIG:
+					emite(EDIF, elem, valor, elem);
+					break;
+				case ASIG:
+					break;
+			}			
+
+			emite(EVA, id_arg, indice, elem);
+			$$ = elem;
+		}
+	}
   | ID_ PUNTO_ ID_ operadorAsignacion expresion
   	{
-  		$$.val = $5.val; //TODO; añadir switch for operadores de asignacion
+		SIMB id;
+		REG campo;		
+		TIPO_ARG exp_arg = $5;
+			
+		id = obtenerSimbolo($1);
+		if(id.categoria==NULO){
+			yyerror("variable struc no declarada");	
+			$$.tipo = T_ERROR;
+		} else {
+			campo = obtenerInfoCampo(id.ref, $3);
+			if(campo.tipo==T_ERROR){
+				yyerror("el campo no es parte de la struct");	
+				$$.tipo = T_ERROR;
+			}else if(campo.tipo!=exp_arg.tipo){
+				yyerror("se trata de asignar un valor de un tipo incorrecto a un campo");	
+				$$.tipo = T_ERROR;			
+			}else{
+				TIPO_ARG campo_arg = crArgPosicion(id.nivel, id.desp + campo.desp);
+				emite(ASIG, exp_arg, crArgNulo(), campo_arg);
+				$$ = campo_arg;
+			}
+		}
   	}
 ;
 expresionIgualdad: expresionRelacional
@@ -402,16 +488,21 @@ expresionAditiva: expresionMultiplicativa
 ;
 expresionMultiplicativa: expresionUnaria
 	{
-		$$.val = $1.val;
+		$$ = $1;
 	}
   | expresionMultiplicativa operadorMultiplicativo expresionUnaria
   	{
+  		TIPO_ARG exp1_arg = $1;
+  		TIPO_ARG exp2_arg = $3;
+  		
+  		$$ = crArgPosicion(nivel, creaVarTemp());
+  	
   		switch($2){
   			case POR:
-  				$$.val.i = $1.val.i * $3.val.i;
+  				emite(EMULT, exp1_arg, exp2_arg, $$);
   				break;
   			case DIV:
-  				$$.val.i = $1.val.i / $3.val.i;
+  				emite(EDIVI, exp1_arg, exp2_arg, $$);
   				break;
   			default:
   				yyerror("Operador multiplicativo desconocido");
@@ -420,14 +511,20 @@ expresionMultiplicativa: expresionUnaria
 ;
 expresionUnaria: expresionSufija 
 	{
-		$$.val = $1.val;
+		$$ = $1;
 	}
   | operadorUnario expresionUnaria
   	{
+  		TIPO_ARG exp_arg = $2;
+  		
   		if($1 == MENOS){
-  			$$.val.i = - $2.val.i;
+	  		printf("\nemite expresionUnaria (-)");
+	  		$$ = crArgPosicion(nivel, creaVarTemp());
+	  		emite(EDIF, crArgEntero(0), exp_arg, $$);
   		} else {
-  			$$.val.i = $2.val.i;
+	  		//printf("\nemite expresionUnaria (+)");
+	  		//emite(EASIG, exp_arg, crArgNulo(), $$);
+	  		$$ = $2;
   		}
   	}
   | operadorIncremento ID_ 
@@ -442,25 +539,60 @@ expresionUnaria: expresionSufija
 		$$ = crArgPosicion(nivel, creaVarTemp());		
 		$$.tipo = T_ENTERO;
 		/************************************** INCREMENTA o DECREMENTA 1 */
-		emite($1, res, crArgEntero(1), res);
+		
+		int operador;
+		if($1==MASMAS){
+			operador = ESUM;
+		}else{
+			operador = EDIF;
+		}
+		
+		printf("\nemite incremento de variable %s", $2);
+		emite(operador, res, crArgEntero(1), res);
 		/***************************************************** Asignacion */
+		printf("\nemite incremento de variable %s (sube valor arriba)", $2);
 		emite(EASIG, res, crArgNulo(), $$);
   	}
 ;
 expresionSufija: ID_ CORABR_ expresion CORCER_
 	{
-		$$.val.i = -1;
+		SIMB id;
+		
+		id = obtenerSimbolo($1);
+		if(id.categoria==NULO){
+			yyerror("variable array no declarada");	
+			$$.tipo = T_ERROR;
+		} else {
+			TIPO_ARG indice = $3;
+			$$ = crArgPosicion(nivel, creaVarTemp());
+			emite(EAV, crArgPosicion(id.nivel, id.desp), indice, $$);
+		}
 	}
   | ID_ PUNTO_ ID_
   	{
-  		$$.val.i = -1;
+		SIMB id;
+		REG campo;		
+			
+		id = obtenerSimbolo($1);
+		if(id.categoria==NULO){
+			yyerror("variable struc no declarada");	
+			$$.tipo = T_ERROR;
+		} else {
+			campo = obtenerInfoCampo(id.ref, $3);
+			if(campo.tipo==T_ERROR){
+				yyerror("el campo no es parte de la struct");	
+				$$.tipo = T_ERROR;
+			}else{
+				$$ = crArgPosicion(id.nivel, id.desp + campo.desp);
+			}
+		}
   	}
   | ID_ operadorIncremento
 	{
 		$$.val.i = -1; //valor de ID_
 					//TODO: ID_ := ID_ + 1
 		$$.tipo = T_ENTERO;
-	}
+	} 
   | ID_ PARABR_ parametrosActuales PARCER_ 
 	{
 		$$.val.i = -1; 
@@ -468,25 +600,23 @@ expresionSufija: ID_ CORABR_ expresion CORCER_
 	}
   | PARABR_ expresion PARCER_
 	{
-		$$.val.i = $2.val.i;
-		$$.tipo = $2.tipo;
+		$$ = $2;
 	}
   | ID_ {
   			SIMB id = obtenerSimbolo($1);
   			
 	  		if(id.categoria==NULO){ 
 	  			yyerror("\n variable NO declarada todavia, primer uso");
+	  			$$.tipo = T_ERROR;
 	  		} else {
-	  			
+	  			$$ = crArgPosicion(id.nivel, id.desp);
 	  		}
 	  		
 	  		
-	  		$$.tipo = id.tipo;
   		}
   | CTE_ 
   	{
-  		$$.val.i = $1;
-  		$$.tipo = T_ENTERO;
+  		$$ = crArgEntero($1);
   	}
 ;
 parametrosActuales:
@@ -554,20 +684,20 @@ operadorMultiplicativo: POR_
 ;
 operadorIncremento: INCMAS_
 	{
-		$$ = ESUM;//MASMAS;
+		$$ = MASMAS;
 	}
   | INCMENOS_
 	{
-		$$ = EDIF;//MENOSMENOS;
+		$$ = MENOSMENOS;
 	}
 ;
 operadorUnario: MAS_
 	{
-		$$ = ESUM;
+		$$ = MAS;
 	}
   | MENOS_
 	{
-		$$ = EDIF;
+		$$ = MENOS;
 	}
 ;
 %%

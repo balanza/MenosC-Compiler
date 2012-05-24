@@ -45,7 +45,7 @@ typedef struct tipo_pos /*********** Estructura para una posición de memoria */
 {
   int pos;                            /*     Posicion relativa de memoria    */
   int niv;                            /*     Contexto (nivel) de la variable */
-}TIPO_POS;
+} TIPO_POS;
 typedef struct tipo_arg /****** Estructura para los argumentos del codigo 3D */
 {              
   int tipo;                  /* Tipo del argumento                           */
@@ -54,7 +54,7 @@ typedef struct tipo_arg /****** Estructura para los argumentos del codigo 3D */
     TIPO_POS p;              /* Variable para argumento posicion de memoria  */
     int e;                   /* Variable para argumento direccion de memoria */
   } val;
-}TIPO_ARG;
+} TIPO_ARG;
 /*************************** Variables globales de uso en todo el compilador */
 
 int si;                /* Desplazamiento en el Segmento de Codigo     */
