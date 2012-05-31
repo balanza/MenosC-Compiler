@@ -47,6 +47,11 @@ int nivel; 			   /* Nivel de anidamiento */
 	  int ref;                          
 	} tdef;
     TIPO_ARG expdef; 
+   struct instr 
+   	{
+   		int inicio;
+   		int fin;
+   	} tinstr;
 }
 
 %token  PUNTOYCOMA_ PUNTO_ COMA_ PARABR_ PARCER_ LLAVABR_ LLAVCER_
@@ -80,6 +85,16 @@ LTE_
 %type <operador> operadorMultiplicativo
 %type <operador> operadorIncremento
 %type <operador> operadorUnario
+
+
+%type <tinst> instruccion
+%type <tinst> instruccionExpresion
+%type <tinst> instruccionEntradaSalida
+%type <tinst> instruccionSeleccion
+%type <tinst> instruccionIteraccion
+%type <tinst> instruccionSalto
+
+
 
 %%
 programa: 
@@ -304,7 +319,18 @@ instruccionEntradaSalida: READ_ PARABR_ ID_ PARCER_ PUNTOYCOMA_
 ;
 instruccionSeleccion: IF_ PARABR_ expresion PARCER_ instruccion ELSE_ instruccion
 ;
-instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ expresion PUNTOYCOMA_ expresionOpcional PARCER_ instruccion
+instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ 
+	{
+	
+	}
+	expresion PUNTOYCOMA_ 
+	{
+		
+	}
+	expresionOpcional PARCER_ 
+	{}
+	instruccion
+	{}
 ;
 expresionOpcional: 
 	{
@@ -312,7 +338,7 @@ expresionOpcional:
 	}
   | expresion
   	{
-  		$$.val = $1.val;
+  		$$ = $1;
   	}
 ;
 instruccionSalto: RETURN_ expresion PUNTOYCOMA_
@@ -428,58 +454,93 @@ expresion: expresionIgualdad
 ;
 expresionIgualdad: expresionRelacional
   	{
-  		$$.val = $1.val;
+  		$$ = $1;
   	}
   | expresionIgualdad operadorIgualdad expresionRelacional
    	{
-   		//TODO: TEST XOR
-   		int x = (($1.val.i == $3.val.i) ^ $2==IGUAL); //TODO: COMPROBAR VALORES DE POSICIONES
-   		/*
-   			x es cierta si:
-   				- el operador es de igualdad y los valores son iguales
-   				- el operador es de no-igualidad y los valores son distintos
-   			sino, x es falso
-   		*/
-   		printf("\n XOR v1: %d, v2: %d, op: %d, res: %d", $1.val.i, $3.val.i, $2, x);
-   		$$.val.i = x;  		
+   		int oprel;
+  		
+  		TIPO_ARG exp1_arg = $1;
+  		TIPO_ARG exp2_arg = $3;
+  		TIPO_ARG true_arg = crArgEntero(1);
+  		TIPO_ARG false_arg = crArgEntero(0);
+  		
+  	
+  		switch($2){
+  			case IGUAL:
+  				oprel = EIGUAL;
+  				break;
+  			case DISTINTO:
+				oprel = EDIST;		
+  				break;
+  			default:
+  				yyerror("Operador igualdad desconocido");
+  		}
+  		
+  		
+  		$$ = crArgPosicion(nivel, creaVarTemp());  	
+ 		emite(EASIG, true_arg, crArgNulo(), $$);  	
+ 		emite(oprel, exp1_arg, exp2_arg, crArgEtiqueta(si+2));  	
+ 		emite(EASIG, false_arg, crArgNulo(), $$);
   	}
 ;
 expresionRelacional: expresionAditiva
 	{
-		$$.val = $1.val;
+		$$ = $1;
 	}
   | expresionRelacional operadorRelacional expresionAditiva
   	{
+  		int oprel;
+  		
+  		TIPO_ARG exp1_arg = $1;
+  		TIPO_ARG exp2_arg = $3;
+  		TIPO_ARG true_arg = crArgEntero(1);
+  		TIPO_ARG false_arg = crArgEntero(0);
+  		
+  	
   		switch($2){
   			case MAYOR:
-  				$$.val.i = ($1.val.i > $3.val.i);
+  				oprel = EMAY;
   				break;
   			case MENOR:
-  				$$.val.i = ($1.val.i < $3.val.i);
+				oprel = EMEN;		
   				break;
   			case MAYORIG:
-  				$$.val.i = ($1.val.i >= $3.val.i);
+  				oprel = EMAYEQ;
   				break;
   			case MENORIG:
-  				$$.val.i = ($1.val.i <= $3.val.i);
+  				oprel = EMENEQ;
   				break;
   			default:
   				yyerror("Operador relacional desconocido");
   		}
+  		
+  		
+  		$$ = crArgPosicion(nivel, creaVarTemp());  	
+ 		emite(EASIG, true_arg, crArgNulo(), $$);  	
+ 		emite(oprel, exp1_arg, exp2_arg, crArgEtiqueta(si+2));  	
+ 		emite(EASIG, false_arg, crArgNulo(), $$);
+  		
+  		
   	}
 ;
 expresionAditiva: expresionMultiplicativa
 	{
-		$$.val = $1.val;
+		$$ = $1;
 	}
   | expresionAditiva operadorAditivo expresionMultiplicativa
   	{
+  		TIPO_ARG exp1_arg = $1;
+  		TIPO_ARG exp2_arg = $3;
+  		
+  		$$ = crArgPosicion(nivel, creaVarTemp());
+  	
   		switch($2){
   			case MAS:
-  				$$.val.i = $1.val.i + $3.val.i;
+  				emite(ESUM, exp1_arg, exp2_arg, $$);
   				break;
   			case MENOS:
-  				$$.val.i = $1.val.i - $3.val.i;
+  				emite(ESIF, exp1_arg, exp2_arg, $$);
   				break;
   			default:
   				yyerror("Operador aditivo desconocido");
