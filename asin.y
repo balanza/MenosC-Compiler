@@ -309,7 +309,7 @@ listaParametrosFormales: tipo ID_
   		} else {
 	  		//RECUERDA: codigo duplicado
 	  		dpar += $1.talla;
-	  			printf("\nLOG par %s desp %d nivel %d", $2, nivel, -dpar);
+	  	//		printf("\nLOG par %s desp %d nivel %d", $2, nivel, -dpar);
 			if(!insertaSimbolo($2, PARAMETRO, $1.tipo, -dpar, nivel, -1)){
 				yyerror("Error en la declaracion de paramentro");
 			} else {
@@ -325,7 +325,7 @@ listaParametrosFormales: tipo ID_
   		} else {
 	  		//RECUERDA: codigo duplicado
 	  		dpar += $1.talla;
-	  			printf("\nLOG par %s desp %d nivel %d", $2, nivel, -dpar);
+	  		//	printf("\nLOG par %s desp %d nivel %d", $2, nivel, -dpar);
 	  		if(!insertaSimbolo($2, PARAMETRO, $1.tipo, -dpar, nivel, -1)){
 				yyerror("Error en la declaracion de paramentro");
 			} else {
