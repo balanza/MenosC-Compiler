@@ -105,7 +105,7 @@ secuenciaDeclaraciones
 			yyerror("ni un main en todo el programa");
 		}
 		
-		mostrarTDS(nivel);
+	//	mostrarTDS(nivel);
 		
 		descargaContexto(nivel);
 		
@@ -184,22 +184,33 @@ tipo: INT_
 listaCampos: declaracionVariable
 	{
 		
+	//	printf("\nLOG campo %s ref -1", $1.id);
 		if($1.tipo != T_ENTERO){
 			yyerror("el tipo de los campos tiene que ser int");
-		} else if($$.ref=insertaInfoCampo(-1, $1.id, $1.tipo, 0) == -1){
-			yyerror("error en la declaracion de campo de la estructura");
+		} else {
+			int ref = insertaInfoCampo(-1, $1.id, $1.tipo, 0);
+			if(ref == -1){
+				yyerror("error en la declaracion de campo de la estructura (primero)");
+			}
+			$$.ref = ref;
+			
 		}
-		dcmp = $1.talla;
+		$$.talla = $1.talla;
+		
 	}
   | listaCampos declaracionVariable  	
 	{
 		
+		//printf("\nLOG campo %s ref %d", $2.id, $1.ref);	
 		if($2.tipo != T_ENTERO){
 			yyerror("el tipo de los campos tiene que ser int");
-		} else if($$.ref=insertaInfoCampo($1.ref, $2.id, $2.tipo, dcmp)==-1){
+		} else if(insertaInfoCampo($1.ref, $2.id, $2.tipo, $1.talla)==-1){
+	//		printf("\nLOG campo %s ", $2.id);
 			yyerror("error en la declaracion de campo de la estructura");
 		}
-		dcmp += $2.talla;
+
+		$$.talla = $1.talla + $2.talla;
+		$$.ref = $1.ref;
 	}
 ;
 declaracionFuncion: cabeceraFuncion bloque 
@@ -232,7 +243,7 @@ declaracionFuncion: cabeceraFuncion bloque
 		}
 
 
-		mostrarTDS(nivel); 
+		//mostrarTDS(nivel); 
 	
 		//restaura entorno
 		descargaContexto(nivel);

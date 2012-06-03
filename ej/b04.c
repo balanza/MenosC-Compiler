@@ -1,7 +1,7 @@
 // Ejemplo (absurdo) sintactico-semantico con variables globales y 
 // locales. Comprobad el resultado con la funcion "mostraTDS"
 int a;
-struct{int b1; int b2;} b;
+struct{int b1; int b2; int b3;} b;
 int c[27];
 
 int A(int x, int y)
