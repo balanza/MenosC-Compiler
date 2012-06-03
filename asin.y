@@ -413,6 +413,12 @@ instruccionEntradaSalida: READ_ PARABR_ ID_
 ;
 instruccionSeleccion: IF_ PARABR_ expresion PARCER_ 
 	{
+		
+		//controlo que la expresion sea de tipo logico
+		if($3.tipo!=T_LOGICO){
+			yyerror("La expresion de la condicion de control no es de tipo logico");
+		}
+	
 		//condiccion para saltar al cuerpo del else
 		$<tdef>$.instr1 = creaLans(si);
 		emite(EIGUAL, $3.exp, crArgEntero(0), crArgNulo());
@@ -436,6 +442,11 @@ instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_
 	}
 	expresion PUNTOYCOMA_ 
 	{
+		//controlo que la expresion sea de tipo logico
+		if($6.tipo!=T_LOGICO){
+			yyerror("La expresion de la condicion de entrada del bucle no es de tipo logico");
+		}
+		
 		//instruccion para salir del bucle
 		$6.instr1 = creaLans(si);
 		emite(EIGUAL, $<tdef>6.exp, crArgEntero(0), crArgNulo());
@@ -475,6 +486,7 @@ instruccionSalto: RETURN_ expresion PUNTOYCOMA_
 		
 		INF inf = obtenerInfoFuncion(-1);
 		if($2.tipo != inf.tipo)	{
+			printf("\nLOG func: %s tipo: %d expr: %d", inf.nombre, inf.tipo, $2.tipo);
 			yyerror("Tipo devuelto por el return es incorrecto.");
 		}
 		//if(strcmp("main",inf.nombre) != 0 ){ // No es main
