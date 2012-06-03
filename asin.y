@@ -213,6 +213,11 @@ declaracionFuncion: cabeceraFuncion bloque
 	
 		//completa lans de INCTOP		
 		completaLans(lansDespFuncion, crArgEntero(dvar));
+		
+		//completa lans return function
+		if(lansReturn!=-1){
+			completaLans(lansReturn, crArgEtiqueta(si));
+		}
 	
 		//emite funciones de salida de la funcion
 		emite(TOPFP, crArgNulo(), crArgNulo(), crArgNulo());
@@ -246,6 +251,7 @@ cabeceraFuncion:
 		dpar = TALLA_SEGENLACES;
 		old_dvar = dvar;
 		dvar = 0;	
+		lansReturn = -1;
 	}
 	PARABR_ parametrosFormales  PARCER_
 	{	
@@ -476,6 +482,16 @@ instruccionSalto: RETURN_ expresion PUNTOYCOMA_
 	
 		int desp = -(inf.tparam + TALLA_SEGENLACES + tallaTipo($2.tipo));
 		emite(EASIG,$2.exp,crArgNulo(),crArgPosicion(nivel,desp));
+		
+		//acaba la funcion, emite un salto al fin
+		int lans = creaLans(si);
+		if(lansReturn==-1){
+			lansReturn = lans;
+		} else {
+			lansReturn = fusionaLans(lansReturn, lans);
+		}
+		emite(GOTOS, crArgNulo(), crArgNulo(), crArgNulo());
+		
 		//}
 	}
 	
@@ -813,7 +829,12 @@ expresionSufija: ID_ CORABR_ expresion CORCER_
 	{
 		$$.tipo = T_ENTERO;
 	} 
-  | ID_ PARABR_ parametrosActuales PARCER_ 
+  | ID_ 
+  	{
+  		//espacio reservado para el valor de retorno
+  		emite(EPUSH, crArgNulo(), crArgNulo(), crArgEntero(0));
+  	}
+  	PARABR_ parametrosActuales PARCER_ 
 	{
 		//obtener simbolo de la funcion desde la tabla de simbolos
 		SIMB id = obtenerSimbolo($1); 
@@ -824,7 +845,7 @@ expresionSufija: ID_ CORABR_ expresion CORCER_
 			$$.tipo=T_ERROR;
 		} else {
 			
-			if(comparaDominio(id.ref, $3.ref)==1){
+			if(comparaDominio(id.ref, $4.ref)==1){
 				INF info = obtenerInfoFuncion(id.ref);
 		  		
   				//emitir call

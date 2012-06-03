@@ -8,6 +8,7 @@ int lansMain;          /* instruccion a la cual se encuentra el main */
 int lansDespGlobal;         /* tamaño del desplazamento global */ 
 int hayReturn;         /* Indica si una funcion tiene una devolucion de valor*/ 
 int tallaReturn;       /* Talla del eventual valor de return*/
+int lansReturn;		   /* Lista de lans para resolver los saltos a fin de funcion  */
 int lansDespFuncion;    /* Se utiliza para resolver la lans del tamaño del desplazamento inicial de una funcion*/
 int verbosidad;
 int verTDS;
