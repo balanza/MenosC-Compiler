@@ -1,7 +1,7 @@
 // Ejemplo (absurdo) de 5 errores semanticos
 int A(int x, int y)
 { int A[0];                       // talla inapropiada  
-  int x;                          // identificador repetido
+  int x;
   y += A[x]; y = y + x;
   return y++;
 }

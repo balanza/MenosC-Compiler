@@ -5,44 +5,23 @@
 
 #include "include/libtds.h"
 #include "include/libgci.h"
+#include "include/header.h"
 
 #include "include/asin.h"
+
+extern FILE *yyin;
+extern int yydebug;
 
 void creaNOmbre();
 void creCentera();
 void truncReal();
 
-void creaNombre()
-/* Comprueba que el identificador no exceda la talla maxima (14); en ese */
-/* caso, lo trunca. */
-{ char *t;
-	if (yyleng > 14) {
-		fprintf(stdout,"Warning at line %d: identificador truncado a longitud %d\n",yylineno, 14);
-		yyleng=14;
-	}
-	t = (char *)malloc(yyleng+1); strncpy(t, yytext, yyleng);
-	t[yyleng] = '\0'; 
-	yylval.ident = t;
-}
 
-/* Transforma una subcadena a la constante entera que representa */
-void creaCentera()
-{ yylval.cent = atoi(yytext); }
-
-void truncCreal()
-/* Transforma una subcadena, que representa una constante real, a una */
-/* constante entera truncandola. */
-{ char *t;
-fprintf(stdout,
-"\nWarning at line %d: constante real truncada a entera\n", yylineno);
-yyleng = strcspn(yytext,".");
-t = (char *)malloc(yyleng+1); strncpy(t, yytext, yyleng);
-t[yyleng] = '\0'; yylval.cent = atoi(t);
-}
 /*****************************************************************************/
 
 %}
 
+%option yylineno
 digito [0-9] 
 letra [a-zA-Z]
 comm \/\/[^\n]*\n
@@ -117,10 +96,8 @@ return {return(RETURN_);}
 
 
 {letra}({letra}|{digito})* {creaNombre(); return(ID_);} 
-{menos}{digito}+ {creaCentera();  return(CTE_);} //constantes enteras
 {digito}+ {creaCentera(); return(CTE_);} //constantes enteras
 {digito}+{punto}{digito}+ {truncCreal(); return(CTE_);} 
-{menos}{digito}+{punto}{digito}+ {truncCreal(); return(CTE_);} 
 
 . {printf("\nnorec %d -> %d", yytext[0], -1);} //caractero desconoscido
 
@@ -132,9 +109,81 @@ return {return(RETURN_);}
 
 int main (int argc, char **argv)
 {
-if ((yyin = fopen (argv[1], "r")) == NULL)
-fprintf (stderr, "Fichero no valido \%s", argv[1]);
+	char * nom_fich;
+	int i, n = 0;
+	for (i=0; i<argc; ++i) 
+	{
+		if (strcmp(argv[i], "-v")==0) 
+		{ 
+			verbosidad = TRUE; 
+			n++; 
+		}
 
-yyparse();
+		else if (strcmp(argv[i], "-t")==0) 
+		{ 
+			verTDS = TRUE; 
+			n++; 
+		}
+	}
+
+	--argc; 
+	n++;
+
+	if (argc == n) 
+	{
+		if ((yyin = fopen (argv[argc], "r")) == NULL)
+		{
+			fprintf (stderr, "Fichero no valido %s\n", argv[argc]);
+		}
+		else 
+		{
+			if (verbosidad == TRUE) 
+			{
+				fprintf(stdout,"%3d.- ", yylineno);
+			}
+			nom_fich = argv[argc];
+			yyparse ();
+			if (numErrores > 0)
+			{
+				fprintf(stdout,"\nNumero de errores: %d \n", numErrores);
+			}
+			else if (numErrores == 0)
+			{
+				vuelcaCodigo(nom_fich);
+			}
+			else
+			{
+				fprintf(stdout,"\nCheck your code man, got: %d no. of errors.\n", numErrores);
+			}
+		}
+	}
+	else fprintf (stderr, "Uso: cmc [-v] [-t] fichero\n");
 }
 
+void creaNombre()
+/* Comprueba que el identificador no exceda la talla maxima (14); en ese */
+/* caso, lo trunca. */
+{ char *t;
+	if (yyleng > 14) {
+		fprintf(stdout,"Warning at line %d: identificador truncado a longitud %d\n",yylineno, 14);
+		yyleng=14;
+	}
+	t = (char *)malloc(yyleng+1); strncpy(t, yytext, yyleng);
+	t[yyleng] = '\0'; 
+	yylval.ident = t;
+}
+
+/* Transforma una subcadena a la constante entera que representa */
+void creaCentera()
+{ yylval.cent = atoi(yytext); }
+
+void truncCreal()
+/* Transforma una subcadena, que representa una constante real, a una */
+/* constante entera truncandola. */
+{ char *t;
+fprintf(stdout,
+"\nWarning at line %d: constante real truncada a entera\n", yylineno);
+yyleng = strcspn(yytext,".");
+t = (char *)malloc(yyleng+1); strncpy(t, yytext, yyleng);
+t[yyleng] = '\0'; yylval.cent = atoi(t);
+}

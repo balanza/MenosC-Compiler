@@ -73,46 +73,15 @@
 #include <stdio.h>
 #include "include/libgci.h"
 #include "include/libtds.h"
+#include "include/header.h"
 extern int yylineno;
 
-/**************** Variables globales **********************/
-int old_dvar;              /* Desplazamiento en el Segmento de Variables  */
-int dpar;              /* Desplazamiento en el Segmento de Parametros de funcion  */
-int dcmp;              /* Desplazamiento del campo en una estructura  */
-int nivel; 			   /* Nivel de anidamiento */
-int hayMain;           /* Se pone a 1 cuando encontramos la funcion main */
-int lansMain;          /* instruccion a la cual se encuentra el main */    
-int lansDespGlobal;         /* tamaño del desplazamento global */ 
-int hayReturn;         /* Indica si una funcion tiene una devolucion de valor*/ 
-int tallaReturn;       /* Talla del eventual valor de return*/
-int lansDespFuncion;    /* Se utiliza para resolver la lans del tamaño del desplazamento inicial de una funcion*/
 
-
-
-/************************************* Codigos para los distintos operadores */
-#define DISTINTO      0
-#define IGUAL         1
-#define MAYOR         2
-#define MENOR         3
-#define MAYORIG       4
-#define MENORIG       5
-#define POR           6
-#define DIV           7
-#define MAS           8
-#define MENOS         9
-#define ASIG         10
-#define MASASIG      11
-#define MENOSASIG    12
-#define MASMAS       13
-#define MENOSMENOS   14 
-/******************************************* Tallas de los tipos y segmentos */
-#define TALLA_ENTERO     1
-#define TALLA_SEGENLACES 2       /* Talla del segmento de Enlaces de Control */
 
 
 
 /* Line 189 of yacc.c  */
-#line 116 "asin.c"
+#line 85 "asin.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -183,7 +152,7 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 46 "asin.y"
+#line 15 "asin.y"
 
   char* ident;  
   /* Para los identificadores  */
@@ -205,7 +174,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 209 "asin.c"
+#line 178 "asin.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -217,7 +186,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 221 "asin.c"
+#line 190 "asin.c"
 
 #ifdef short
 # undef short
@@ -432,16 +401,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  3
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   179
+#define YYLAST   175
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  37
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  47
+#define YYNNTS  48
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  91
+#define YYNRULES  92
 /* YYNRULES -- Number of states.  */
-#define YYNSTATES  157
+#define YYNSTATES  158
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
@@ -492,14 +461,14 @@ static const yytype_uint16 yyprhs[] =
 {
        0,     0,     3,     4,     7,     9,    12,    14,    16,    20,
       27,    29,    34,    36,    39,    42,    43,    50,    51,    53,
-      56,    61,    66,    67,    70,    71,    74,    75,    81,    83,
-      85,    87,    89,    91,    93,    96,    97,   104,   105,   112,
-     113,   114,   124,   125,   126,   127,   140,   141,   143,   147,
-     149,   153,   160,   166,   168,   172,   174,   178,   180,   184,
-     186,   190,   192,   195,   198,   203,   207,   210,   215,   219,
-     221,   223,   224,   226,   228,   232,   234,   236,   238,   240,
+      56,    57,    63,    68,    69,    72,    73,    76,    77,    83,
+      85,    87,    89,    91,    93,    95,    98,    99,   106,   107,
+     114,   115,   116,   126,   127,   128,   129,   142,   143,   145,
+     149,   151,   155,   162,   168,   170,   174,   176,   180,   182,
+     186,   188,   192,   194,   197,   200,   205,   209,   212,   217,
+     221,   223,   225,   226,   228,   230,   234,   236,   238,   240,
      242,   244,   246,   248,   250,   252,   254,   256,   258,   260,
-     262,   264
+     262,   264,   266
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
@@ -509,44 +478,44 @@ static const yytype_int8 yyrhs[] =
       41,    -1,    42,    -1,    45,    -1,    43,    35,     3,    -1,
       43,    35,    10,    36,    11,     3,    -1,    12,    -1,    13,
        8,    44,     9,    -1,    42,    -1,    44,    42,    -1,    46,
-      50,    -1,    -1,    43,    35,     6,    47,    48,     7,    -1,
-      -1,    49,    -1,    43,    35,    -1,    43,    35,     5,    49,
-      -1,     8,    51,    52,     9,    -1,    -1,    51,    42,    -1,
-      -1,    52,    53,    -1,    -1,    54,     8,    51,    52,     9,
-      -1,    55,    -1,    56,    -1,    59,    -1,    62,    -1,    67,
-      -1,     3,    -1,    68,     3,    -1,    -1,    14,     6,    35,
-      57,     7,     3,    -1,    -1,    15,     6,    68,    58,     7,
-       3,    -1,    -1,    -1,    16,     6,    68,     7,    60,    53,
-      61,    17,    53,    -1,    -1,    -1,    -1,    18,     6,    66,
-       3,    63,    68,     3,    64,    66,     7,    65,    53,    -1,
-      -1,    68,    -1,    19,    68,     3,    -1,    69,    -1,    35,
-      77,    68,    -1,    35,    10,    68,    11,    77,    68,    -1,
-      35,     4,    35,    77,    68,    -1,    70,    -1,    69,    78,
-      70,    -1,    71,    -1,    70,    79,    71,    -1,    72,    -1,
-      71,    80,    72,    -1,    73,    -1,    72,    81,    73,    -1,
-      74,    -1,    83,    73,    -1,    82,    35,    -1,    35,    10,
-      68,    11,    -1,    35,     4,    35,    -1,    35,    82,    -1,
-      35,     6,    75,     7,    -1,     6,    68,     7,    -1,    35,
-      -1,    36,    -1,    -1,    76,    -1,    68,    -1,    68,     5,
-      76,    -1,    26,    -1,    27,    -1,    28,    -1,    29,    -1,
-      30,    -1,    31,    -1,    32,    -1,    33,    -1,    34,    -1,
-      20,    -1,    22,    -1,    21,    -1,    23,    -1,    24,    -1,
-      25,    -1,    20,    -1,    22,    -1
+      51,    -1,    -1,    43,    35,    47,     6,    48,     7,    -1,
+      -1,    49,    -1,    43,    35,    -1,    -1,    43,    35,     5,
+      50,    49,    -1,     8,    52,    53,     9,    -1,    -1,    52,
+      42,    -1,    -1,    53,    54,    -1,    -1,    55,     8,    52,
+      53,     9,    -1,    56,    -1,    57,    -1,    60,    -1,    63,
+      -1,    68,    -1,     3,    -1,    69,     3,    -1,    -1,    14,
+       6,    35,    58,     7,     3,    -1,    -1,    15,     6,    69,
+      59,     7,     3,    -1,    -1,    -1,    16,     6,    69,     7,
+      61,    54,    62,    17,    54,    -1,    -1,    -1,    -1,    18,
+       6,    67,     3,    64,    69,     3,    65,    67,     7,    66,
+      54,    -1,    -1,    69,    -1,    19,    69,     3,    -1,    70,
+      -1,    35,    78,    69,    -1,    35,    10,    69,    11,    78,
+      69,    -1,    35,     4,    35,    78,    69,    -1,    71,    -1,
+      70,    79,    71,    -1,    72,    -1,    71,    80,    72,    -1,
+      73,    -1,    72,    81,    73,    -1,    74,    -1,    73,    82,
+      74,    -1,    75,    -1,    84,    74,    -1,    83,    35,    -1,
+      35,    10,    69,    11,    -1,    35,     4,    35,    -1,    35,
+      83,    -1,    35,     6,    76,     7,    -1,     6,    69,     7,
+      -1,    35,    -1,    36,    -1,    -1,    77,    -1,    69,    -1,
+      69,     5,    77,    -1,    26,    -1,    27,    -1,    28,    -1,
+      29,    -1,    30,    -1,    31,    -1,    32,    -1,    33,    -1,
+      34,    -1,    20,    -1,    22,    -1,    21,    -1,    23,    -1,
+      24,    -1,    25,    -1,    20,    -1,    22,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   108,   108,   108,   141,   145,   150,   163,   195,   203,
-     221,   227,   234,   244,   255,   280,   279,   318,   321,   326,
-     341,   358,   364,   369,   384,   385,   388,   388,   397,   398,
-     399,   400,   401,   403,   407,   410,   409,   425,   424,   431,
-     437,   430,   448,   453,   462,   447,   477,   480,   485,   504,
-     508,   554,   587,   614,   618,   648,   652,   690,   694,   716,
-     720,   741,   745,   759,   789,   806,   826,   830,   859,   863,
-     876,   883,   886,   893,   899,   905,   909,   913,   918,   922,
-     927,   931,   935,   939,   944,   948,   953,   957,   962,   966,
-     971,   975
+       0,    77,    77,    77,   114,   118,   123,   136,   141,   149,
+     171,   177,   184,   194,   205,   242,   241,   291,   294,   299,
+     316,   315,   338,   344,   348,   362,   363,   366,   366,   375,
+     376,   377,   378,   379,   381,   385,   388,   387,   403,   402,
+     409,   415,   408,   427,   432,   441,   426,   456,   459,   464,
+     483,   487,   531,   567,   594,   598,   628,   632,   670,   674,
+     696,   700,   721,   725,   739,   769,   789,   812,   816,   845,
+     849,   863,   870,   873,   880,   886,   892,   896,   900,   905,
+     909,   914,   918,   922,   926,   931,   935,   940,   944,   949,
+     953,   958,   962
 };
 #endif
 
@@ -563,10 +532,10 @@ static const char *const yytname[] =
   "ID_", "CTE_", "$accept", "programa", "$@1", "secuenciaDeclaraciones",
   "declaracion", "declaracionVariable", "tipo", "listaCampos",
   "declaracionFuncion", "cabeceraFuncion", "$@2", "parametrosFormales",
-  "listaParametrosFormales", "bloque", "declaracionVariableLocal",
-  "listaInstrucciones", "instruccion", "$@3", "instruccionExpresion",
-  "instruccionEntradaSalida", "$@4", "$@5", "instruccionSeleccion", "@6",
-  "@7", "instruccionIteraccion", "@8", "@9", "@10", "expresionOpcional",
+  "listaParametrosFormales", "$@3", "bloque", "declaracionVariableLocal",
+  "listaInstrucciones", "instruccion", "$@4", "instruccionExpresion",
+  "instruccionEntradaSalida", "$@5", "$@6", "instruccionSeleccion", "@7",
+  "@8", "instruccionIteraccion", "@9", "@10", "@11", "expresionOpcional",
   "instruccionSalto", "expresion", "expresionIgualdad",
   "expresionRelacional", "expresionAditiva", "expresionMultiplicativa",
   "expresionUnaria", "expresionSufija", "parametrosActuales",
@@ -593,14 +562,14 @@ static const yytype_uint8 yyr1[] =
 {
        0,    37,    39,    38,    40,    40,    41,    41,    42,    42,
       43,    43,    44,    44,    45,    47,    46,    48,    48,    49,
-      49,    50,    51,    51,    52,    52,    54,    53,    53,    53,
-      53,    53,    53,    55,    55,    57,    56,    58,    56,    60,
-      61,    59,    63,    64,    65,    62,    66,    66,    67,    68,
-      68,    68,    68,    69,    69,    70,    70,    71,    71,    72,
-      72,    73,    73,    73,    74,    74,    74,    74,    74,    74,
-      74,    75,    75,    76,    76,    77,    77,    77,    78,    78,
-      79,    79,    79,    79,    80,    80,    81,    81,    82,    82,
-      83,    83
+      50,    49,    51,    52,    52,    53,    53,    55,    54,    54,
+      54,    54,    54,    54,    56,    56,    58,    57,    59,    57,
+      61,    62,    60,    64,    65,    66,    63,    67,    67,    68,
+      69,    69,    69,    69,    70,    70,    71,    71,    72,    72,
+      73,    73,    74,    74,    74,    75,    75,    75,    75,    75,
+      75,    75,    76,    76,    77,    77,    78,    78,    78,    79,
+      79,    80,    80,    80,    80,    81,    81,    82,    82,    83,
+      83,    84,    84
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
@@ -608,14 +577,14 @@ static const yytype_uint8 yyr2[] =
 {
        0,     2,     0,     2,     1,     2,     1,     1,     3,     6,
        1,     4,     1,     2,     2,     0,     6,     0,     1,     2,
-       4,     4,     0,     2,     0,     2,     0,     5,     1,     1,
-       1,     1,     1,     1,     2,     0,     6,     0,     6,     0,
-       0,     9,     0,     0,     0,    12,     0,     1,     3,     1,
-       3,     6,     5,     1,     3,     1,     3,     1,     3,     1,
-       3,     1,     2,     2,     4,     3,     2,     4,     3,     1,
-       1,     0,     1,     1,     3,     1,     1,     1,     1,     1,
+       0,     5,     4,     0,     2,     0,     2,     0,     5,     1,
+       1,     1,     1,     1,     1,     2,     0,     6,     0,     6,
+       0,     0,     9,     0,     0,     0,    12,     0,     1,     3,
+       1,     3,     6,     5,     1,     3,     1,     3,     1,     3,
+       1,     3,     1,     2,     2,     4,     3,     2,     4,     3,
+       1,     1,     0,     1,     1,     3,     1,     1,     1,     1,
        1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
-       1,     1
+       1,     1,     1
 };
 
 /* YYDEFACT[STATE-NAME] -- Default rule to reduce with in state
@@ -624,64 +593,64 @@ static const yytype_uint8 yyr2[] =
 static const yytype_uint8 yydefact[] =
 {
        2,     0,     0,     1,    10,     0,     3,     4,     6,     0,
-       7,     0,     0,     5,     0,    22,    14,    12,     0,     0,
-       8,    15,     0,    24,     0,    11,    13,    17,     0,    23,
-      26,     0,     0,    18,     0,    33,     0,    21,     0,     0,
-       0,     0,     0,    90,    91,    88,    89,    69,    70,    25,
-       0,    28,    29,    30,    31,    32,     0,    49,    53,    55,
-      57,    59,    61,     0,     0,    19,    16,     9,     0,     0,
-       0,     0,    46,     0,     0,    71,     0,    75,    76,    77,
-       0,    66,    22,    34,    78,    79,     0,    80,    81,    82,
-      83,     0,    84,    85,     0,    86,    87,     0,    63,    69,
-      62,     0,    68,    35,    37,     0,     0,    47,    48,    65,
-      73,     0,    72,     0,    50,    24,    54,    56,    58,    60,
-       0,     0,    20,     0,     0,    39,    42,     0,     0,    67,
-      64,    26,    65,     0,     0,     0,    26,     0,    52,    74,
-       0,    27,    64,    36,    38,    40,     0,    51,     0,    43,
-      26,    46,    41,     0,    44,    26,    45
+       7,     0,     0,     5,    15,    23,    14,    12,     0,     0,
+       8,     0,     0,    25,     0,    11,    13,     0,    17,    24,
+      27,     0,     0,     0,    18,    34,     0,    22,     0,     0,
+       0,     0,     0,    91,    92,    89,    90,    70,    71,    26,
+       0,    29,    30,    31,    32,    33,     0,    50,    54,    56,
+      58,    60,    62,     0,     0,     9,    19,    16,     0,     0,
+       0,     0,    47,     0,     0,    72,     0,    76,    77,    78,
+       0,    67,    23,    35,    79,    80,     0,    81,    82,    83,
+      84,     0,    85,    86,     0,    87,    88,     0,    64,    70,
+      63,    20,    69,    36,    38,     0,     0,    48,    49,    66,
+      74,     0,    73,     0,    51,    25,    55,    57,    59,    61,
+       0,     0,     0,     0,     0,    40,    43,     0,     0,    68,
+      65,    27,    66,     0,    21,     0,     0,    27,     0,    53,
+      75,     0,    28,    65,    37,    39,    41,     0,    52,     0,
+      44,    27,    47,    42,     0,    45,    27,    46
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int16 yydefgoto[] =
 {
       -1,     1,     2,     6,     7,     8,    18,    19,    10,    11,
-      27,    32,    33,    16,    23,    30,    49,    50,    51,    52,
-     123,   124,    53,   136,   148,    54,   137,   151,   155,   106,
-      55,    56,    57,    58,    59,    60,    61,    62,   111,   112,
-      80,    86,    91,    94,    97,    63,    64
+      22,    33,    34,   122,    16,    23,    30,    49,    50,    51,
+      52,   123,   124,    53,   137,   149,    54,   138,   152,   156,
+     106,    55,    56,    57,    58,    59,    60,    61,    62,   111,
+     112,    80,    86,    91,    94,    97,    63,    64
 };
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
-#define YYPACT_NINF -113
+#define YYPACT_NINF -128
 static const yytype_int16 yypact[] =
 {
-    -113,    11,    62,  -113,  -113,     9,    62,  -113,  -113,   -28,
-    -113,    51,    62,  -113,    12,  -113,  -113,  -113,    28,     7,
-    -113,  -113,   -11,    62,    43,  -113,  -113,    62,    54,  -113,
-      42,    34,    69,  -113,    68,  -113,    48,  -113,    76,    84,
-      89,    90,    48,  -113,  -113,  -113,  -113,     4,  -113,  -113,
-      91,  -113,  -113,  -113,  -113,  -113,    94,    64,    55,    27,
-      29,  -113,  -113,    63,   143,    97,  -113,  -113,    96,    72,
-      48,    48,    48,   105,    75,    48,    48,  -113,  -113,  -113,
-      48,  -113,  -113,  -113,  -113,  -113,   143,  -113,  -113,  -113,
-    -113,   143,  -113,  -113,   143,  -113,  -113,   143,  -113,    17,
-    -113,    62,  -113,  -113,  -113,   104,   110,  -113,  -113,    53,
-     109,   113,  -113,   115,  -113,    62,    55,    27,    29,  -113,
-      81,    48,  -113,   117,   123,  -113,  -113,    48,    48,  -113,
-      53,   103,  -113,   120,   130,   131,   126,    48,  -113,  -113,
-      48,  -113,  -113,  -113,  -113,  -113,   132,  -113,   119,  -113,
-     126,    48,  -113,   136,  -113,   126,  -113
+    -128,    25,    -1,  -128,  -128,    23,    -1,  -128,  -128,     4,
+    -128,    26,    -1,  -128,     5,  -128,  -128,  -128,    12,     7,
+    -128,     6,    58,    -1,     5,  -128,  -128,    62,    -1,  -128,
+      43,    73,    42,    74,  -128,  -128,     8,  -128,    77,    81,
+      82,    83,     8,  -128,  -128,  -128,  -128,   147,  -128,  -128,
+      86,  -128,  -128,  -128,  -128,  -128,    87,   -12,    38,    28,
+      30,  -128,  -128,    56,    60,  -128,    92,  -128,    91,    64,
+       8,     8,     8,    97,    66,     8,     8,  -128,  -128,  -128,
+       8,  -128,  -128,  -128,  -128,  -128,    60,  -128,  -128,  -128,
+    -128,    60,  -128,  -128,    60,  -128,  -128,    60,  -128,    50,
+    -128,  -128,  -128,  -128,  -128,    95,   101,  -128,  -128,    -5,
+     102,   104,  -128,    98,  -128,    -1,    38,    28,    30,  -128,
+      79,     8,    -1,   105,   108,  -128,  -128,     8,     8,  -128,
+      -5,   107,  -128,   113,  -128,   115,   116,   130,     8,  -128,
+    -128,     8,  -128,  -128,  -128,  -128,  -128,   125,  -128,   117,
+    -128,   130,     8,  -128,   123,  -128,   130,  -128
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-    -113,  -113,  -113,  -113,   141,   -10,    -1,  -113,  -113,  -113,
-    -113,  -113,    36,  -113,    70,    38,  -112,  -113,  -113,  -113,
-    -113,  -113,  -113,  -113,  -113,  -113,  -113,  -113,  -113,     3,
-    -113,   -36,  -113,    71,    65,    61,   -60,  -113,  -113,    30,
-     -97,  -113,  -113,  -113,  -113,   -44,  -113
+    -128,  -128,  -128,  -128,   129,   -10,    -2,  -128,  -128,  -128,
+    -128,  -128,   -14,  -128,  -128,    55,    24,  -127,  -128,  -128,
+    -128,  -128,  -128,  -128,  -128,  -128,  -128,  -128,  -128,  -128,
+     -11,  -128,   -35,  -128,    52,    49,    53,   -59,  -128,  -128,
+      31,  -103,  -128,  -128,  -128,  -128,   -44,  -128
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -691,46 +660,46 @@ static const yytype_int16 yypgoto[] =
 #define YYTABLE_NINF -1
 static const yytype_uint8 yytable[] =
 {
-      68,     9,    17,    81,   100,     9,    73,    14,    74,    26,
-      75,     3,   127,    29,    76,    20,    25,    12,    21,     4,
-       5,   120,    22,    75,   145,    28,    31,   121,    45,    46,
-      77,    78,    79,   140,   104,   105,   107,   119,   152,   110,
-     113,    45,    46,   156,   114,    35,    20,    92,    36,    93,
-      95,    37,    96,    22,    36,    81,    38,    39,    40,    15,
-      41,    42,    43,    24,    44,    34,    45,    46,    43,    65,
-      44,    67,    45,    46,     4,     5,    66,    47,    48,    77,
-      78,    79,    69,    47,    48,   133,    87,    88,    89,    90,
-      70,   138,   110,    84,    85,    71,    72,    83,    98,    82,
-      31,   146,   101,   102,   147,    29,    35,   103,   108,    36,
-     109,   125,   141,   126,   128,   107,   132,    38,    39,    40,
-     129,    41,    42,    43,   134,    44,   130,    45,    46,    35,
-     135,   142,    36,   143,   144,   149,   150,   122,    47,    48,
-      38,    39,    40,   154,    41,    42,    43,    13,    44,    36,
-      45,    46,   115,   131,   153,   118,   117,   116,   139,     0,
-       0,    47,    48,    43,     0,    44,     0,    45,    46,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,    99,    48
+       9,    68,    17,    81,     9,   100,   127,    73,    20,    26,
+     146,     4,     5,    29,    36,    21,    25,    84,    85,     4,
+       5,    77,    78,    79,   153,     3,    32,   141,    43,   157,
+      44,    12,    45,    46,    15,   104,   105,   107,   119,    14,
+     110,   113,    27,    47,    48,   114,    35,    24,    92,    36,
+      93,    95,    37,    96,   120,    81,    75,    38,    39,    40,
+     121,    41,    42,    43,    28,    44,    36,    45,    46,    87,
+      88,    89,    90,    31,    45,    46,    65,    66,    47,    48,
+      43,    67,    44,    69,    45,    46,   133,    70,    71,    72,
+      83,    98,   139,   110,    82,    99,    48,   101,   102,   103,
+     108,   109,   125,   147,   126,    29,   148,   128,   134,   130,
+      35,   129,   135,    36,   132,   136,   142,   107,   144,   145,
+      32,    38,    39,    40,   143,    41,    42,    43,   150,    44,
+     155,    45,    46,    35,   151,    13,    36,   115,   116,   131,
+     117,   154,    47,    48,    38,    39,    40,   118,    41,    42,
+      43,    74,    44,    75,    45,    46,     0,    76,     0,   140,
+       0,     0,     0,     0,     0,    47,    48,     0,     0,     0,
+       0,    45,    46,    77,    78,    79
 };
 
 static const yytype_int16 yycheck[] =
 {
-      36,     2,    12,    47,    64,     6,    42,    35,     4,    19,
-       6,     0,   109,    23,    10,     3,     9,     8,     6,    12,
-      13,     4,    10,     6,   136,    36,    27,    10,    24,    25,
-      26,    27,    28,   130,    70,    71,    72,    97,   150,    75,
-      76,    24,    25,   155,    80,     3,     3,    20,     6,    22,
-      21,     9,    23,    10,     6,    99,    14,    15,    16,     8,
-      18,    19,    20,    35,    22,    11,    24,    25,    20,    35,
-      22,     3,    24,    25,    12,    13,     7,    35,    36,    26,
-      27,    28,     6,    35,    36,   121,    31,    32,    33,    34,
-       6,   127,   128,    29,    30,     6,     6,     3,    35,     8,
-     101,   137,     5,     7,   140,   115,     3,    35,     3,     6,
-      35,     7,     9,     3,     5,   151,    35,    14,    15,    16,
-       7,    18,    19,    20,     7,    22,    11,    24,    25,     3,
-       7,    11,     6,     3,     3,     3,    17,   101,    35,    36,
-      14,    15,    16,     7,    18,    19,    20,     6,    22,     6,
-      24,    25,    82,   115,   151,    94,    91,    86,   128,    -1,
-      -1,    35,    36,    20,    -1,    22,    -1,    24,    25,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    35,    36
+       2,    36,    12,    47,     6,    64,   109,    42,     3,    19,
+     137,    12,    13,    23,     6,    10,     9,    29,    30,    12,
+      13,    26,    27,    28,   151,     0,    28,   130,    20,   156,
+      22,     8,    24,    25,     8,    70,    71,    72,    97,    35,
+      75,    76,    36,    35,    36,    80,     3,    35,    20,     6,
+      22,    21,     9,    23,     4,    99,     6,    14,    15,    16,
+      10,    18,    19,    20,     6,    22,     6,    24,    25,    31,
+      32,    33,    34,    11,    24,    25,     3,    35,    35,    36,
+      20,     7,    22,     6,    24,    25,   121,     6,     6,     6,
+       3,    35,   127,   128,     8,    35,    36,     5,     7,    35,
+       3,    35,     7,   138,     3,   115,   141,     5,   122,    11,
+       3,     7,     7,     6,    35,     7,     9,   152,     3,     3,
+     122,    14,    15,    16,    11,    18,    19,    20,     3,    22,
+       7,    24,    25,     3,    17,     6,     6,    82,    86,   115,
+      91,   152,    35,    36,    14,    15,    16,    94,    18,    19,
+      20,     4,    22,     6,    24,    25,    -1,    10,    -1,   128,
+      -1,    -1,    -1,    -1,    -1,    35,    36,    -1,    -1,    -1,
+      -1,    24,    25,    26,    27,    28
 };
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -738,21 +707,21 @@ static const yytype_int16 yycheck[] =
 static const yytype_uint8 yystos[] =
 {
        0,    38,    39,     0,    12,    13,    40,    41,    42,    43,
-      45,    46,     8,    41,    35,     8,    50,    42,    43,    44,
-       3,     6,    10,    51,    35,     9,    42,    47,    36,    42,
-      52,    43,    48,    49,    11,     3,     6,     9,    14,    15,
-      16,    18,    19,    20,    22,    24,    25,    35,    36,    53,
-      54,    55,    56,    59,    62,    67,    68,    69,    70,    71,
-      72,    73,    74,    82,    83,    35,     7,     3,    68,     6,
-       6,     6,     6,    68,     4,     6,    10,    26,    27,    28,
-      77,    82,     8,     3,    29,    30,    78,    31,    32,    33,
-      34,    79,    20,    22,    80,    21,    23,    81,    35,    35,
-      73,     5,     7,    35,    68,    68,    66,    68,     3,    35,
-      68,    75,    76,    68,    68,    51,    70,    71,    72,    73,
-       4,    10,    49,    57,    58,     7,     3,    77,     5,     7,
-      11,    52,    35,    68,     7,     7,    60,    63,    68,    76,
-      77,     9,    11,     3,     3,    53,    68,    68,    61,     3,
-      17,    64,    53,    66,     7,    65,    53
+      45,    46,     8,    41,    35,     8,    51,    42,    43,    44,
+       3,    10,    47,    52,    35,     9,    42,    36,     6,    42,
+      53,    11,    43,    48,    49,     3,     6,     9,    14,    15,
+      16,    18,    19,    20,    22,    24,    25,    35,    36,    54,
+      55,    56,    57,    60,    63,    68,    69,    70,    71,    72,
+      73,    74,    75,    83,    84,     3,    35,     7,    69,     6,
+       6,     6,     6,    69,     4,     6,    10,    26,    27,    28,
+      78,    83,     8,     3,    29,    30,    79,    31,    32,    33,
+      34,    80,    20,    22,    81,    21,    23,    82,    35,    35,
+      74,     5,     7,    35,    69,    69,    67,    69,     3,    35,
+      69,    76,    77,    69,    69,    52,    71,    72,    73,    74,
+       4,    10,    50,    58,    59,     7,     3,    78,     5,     7,
+      11,    53,    35,    69,    49,     7,     7,    61,    64,    69,
+      77,    78,     9,    11,     3,     3,    54,    69,    69,    62,
+       3,    17,    65,    54,    67,     7,    66,    54
 };
 
 #define yyerrok		(yyerrstatus = 0)
@@ -1566,12 +1535,15 @@ yyreduce:
         case 2:
 
 /* Line 1455 of yacc.c  */
-#line 108 "asin.y"
+#line 77 "asin.y"
     {
 		nivel = 0;		
 		dvar = 0;
 		hayMain = 0;
 		cargaContexto(nivel);
+		
+ 		numErrores = 0;
+ 		
 		
 		/**************************** Desplazamiento global ****************************/
 		// 	Lo calculamos sumando la talla de todas las "declaraciones de variables
@@ -1589,7 +1561,7 @@ yyreduce:
   case 3:
 
 /* Line 1455 of yacc.c  */
-#line 126 "asin.y"
+#line 98 "asin.y"
     {
 		//completa la instruccion de INCTOP inicial
 		completaLans(lansDespGlobal, crArgEntero((yyvsp[(2) - (2)].tdef).talla));
@@ -1600,8 +1572,9 @@ yyreduce:
 			yyerror("ni un main en todo el programa");
 		}
 		
+		mostrarTDS(nivel);
+		
 		descargaContexto(nivel);
-		vuelcaCodigo("codigo");
 		
 	;}
     break;
@@ -1609,7 +1582,7 @@ yyreduce:
   case 4:
 
 /* Line 1455 of yacc.c  */
-#line 142 "asin.y"
+#line 115 "asin.y"
     {
 		(yyval.tdef).talla = (yyvsp[(1) - (1)].tdef).talla;
 	;}
@@ -1618,7 +1591,7 @@ yyreduce:
   case 5:
 
 /* Line 1455 of yacc.c  */
-#line 146 "asin.y"
+#line 119 "asin.y"
     {
 		(yyval.tdef).talla = (yyvsp[(1) - (2)].tdef).talla + (yyvsp[(2) - (2)].tdef).talla;
 	;}
@@ -1627,7 +1600,7 @@ yyreduce:
   case 6:
 
 /* Line 1455 of yacc.c  */
-#line 151 "asin.y"
+#line 124 "asin.y"
     {
 		
 		if(!insertaSimbolo((yyvsp[(1) - (1)].tdef).id, VARIABLE, (yyvsp[(1) - (1)].tdef).tipo, dvar, nivel, (yyvsp[(1) - (1)].tdef).ref)){
@@ -1645,35 +1618,8 @@ yyreduce:
   case 7:
 
 /* Line 1455 of yacc.c  */
-#line 164 "asin.y"
+#line 137 "asin.y"
     {
-printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].tdef).id, (yyvsp[(1) - (1)].tdef).tipo, nivel, (yyvsp[(1) - (1)].tdef).ref);
-		if(!insertaSimbolo((yyvsp[(1) - (1)].tdef).id, FUNCION, (yyvsp[(1) - (1)].tdef).tipo, si, nivel, (yyvsp[(1) - (1)].tdef).ref)){
-			yyerror("---> funcion repetida");
-		}
-		
-		//detectando main
-		if(strcmp("main",(yyvsp[(1) - (1)].tdef).id) == 0){
-			if(hayMain==0){
-				hayMain = 1;
-				completaLans(lansMain, crArgEtiqueta(si));
-			} else {
-				yyerror("hay dos declaraciones de main en el programa");
-			}		
-		}
-		
-		
-		if(hayReturn == 1){
-			(yyvsp[(1) - (1)].tdef).talla += tallaReturn;
-		}
-		
-		completaLans(lansDespFuncion, crArgEntero((yyvsp[(1) - (1)].tdef).talla));
-				
-		
-		emite(RET, crArgNulo(), crArgNulo(), crArgNulo());
-		
-		
-		//las funciones no ocupan espacio en la memoria estatica
 		(yyval.tdef).talla = 0;
 	;}
     break;
@@ -1681,7 +1627,7 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 196 "asin.y"
+#line 142 "asin.y"
     {
 		(yyval.tdef).id = (yyvsp[(2) - (3)].ident);
 		(yyval.tdef).tipo = (yyvsp[(1) - (3)].tdef).tipo; 
@@ -1694,13 +1640,17 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
   case 9:
 
 /* Line 1455 of yacc.c  */
-#line 204 "asin.y"
+#line 150 "asin.y"
     {
-  	//printf("\n cte: %d, tipo: %d", $4, $1.tipo);
+  	
   	if((yyvsp[(1) - (6)].tdef).tipo!=T_ENTERO){
 		yyerror("el tipo de los vectores tiene que ser int");
 	} else if((yyvsp[(4) - (6)].cent)<=0){
 		yyerror("el array debe contener un numero positivo de elementos");
+		(yyval.tdef).id = (yyvsp[(2) - (6)].ident);
+		(yyval.tdef).tipo = T_ERROR;
+		(yyval.tdef).talla = 1; // ???
+		(yyval.tdef).ref = insertaInfoArray((yyvsp[(1) - (6)].tdef).tipo, 4);
 	} else {	
 		(yyval.tdef).id = (yyvsp[(2) - (6)].ident);
 		(yyval.tdef).tipo = T_ARRAY;
@@ -1716,7 +1666,7 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
   case 10:
 
 /* Line 1455 of yacc.c  */
-#line 222 "asin.y"
+#line 172 "asin.y"
     {
 		(yyval.tdef).talla = TALLA_ENTERO;
 		(yyval.tdef).tipo = T_ENTERO;
@@ -1727,7 +1677,7 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
   case 11:
 
 /* Line 1455 of yacc.c  */
-#line 228 "asin.y"
+#line 178 "asin.y"
     {
   		(yyval.tdef).talla = (yyvsp[(3) - (4)].tdef).talla;
   		(yyval.tdef).tipo = T_RECORD;
@@ -1738,7 +1688,7 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 235 "asin.y"
+#line 185 "asin.y"
     {
 		
 		if((yyvsp[(1) - (1)].tdef).tipo != T_ENTERO){
@@ -1753,7 +1703,7 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 245 "asin.y"
+#line 195 "asin.y"
     {
 		
 		if((yyvsp[(2) - (2)].tdef).tipo != T_ENTERO){
@@ -1768,27 +1718,37 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 256 "asin.y"
+#line 206 "asin.y"
     {
+		//calcula tamaño del RA
+		/*int t_ra;
+		t_ra = $2.talla + $3.talla;
+		if(hayReturn == 1){
+			t_ra += tallaReturn;
+		}*/
+	
+		//completa lans de INCTOP		
+		completaLans(lansDespFuncion, crArgEntero(dvar));
+	
+		//emite funciones de salida de la funcion
+		emite(TOPFP, crArgNulo(), crArgNulo(), crArgNulo());
+		emite(FPPOP, crArgNulo(), crArgNulo(), crArgNulo());
+		
+		
+		//detecta la funcion main, y define el cierre de de la funcion (o del programa entero)
+		if(strcmp("main",(yyvsp[(1) - (2)].tdef).id) == 0){
+			emite(FIN, crArgNulo(), crArgNulo(), crArgNulo());
+		} else {
+			emite(RET, crArgNulo(), crArgNulo(), crArgNulo());
+		}
+
+
+		mostrarTDS(nivel); 
+	
+		//restaura entorno
 		descargaContexto(nivel);
 		nivel--;
-		dvar = old_dvar;
-		
-		(yyval.tdef).tipo = (yyvsp[(1) - (2)].tdef).tipo;
-		(yyval.tdef).ref = (yyvsp[(1) - (2)].tdef).ref;
-		(yyval.tdef).id = (yyvsp[(1) - (2)].tdef).id;
-		/*
-			la talla de una funcion nos dice el tamaño del RA, siendo la suma de:
-			 1. talla de parametros
-			 2. talla de segmento de enlaces
-			 3. talla de valor devuelto
-			(1) está contenido en el no-terminal cabeceraFuncion
-			(2) en bloque
-			(3) si hayReturn==1, es la talla del tipo --> lo comprobamos en declaracionFuncion
-		*/
-		(yyval.tdef).talla = (yyvsp[(1) - (2)].tdef).talla + (yyvsp[(2) - (2)].tdef).talla; //
-		
-		
+		dvar = old_dvar + 1;
 		
 	;}
     break;
@@ -1796,54 +1756,65 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 280 "asin.y"
+#line 242 "asin.y"
     {
-	
-		//emision de codigo por la inicializacion del RA de la funcion
-		emite(PUSHFP, crArgNulo(), crArgNulo(), crArgNulo());
-		emite(FPTOP, crArgNulo(), crArgNulo(), crArgNulo());	
-  		lansDespFuncion = creaLans(si);	
-		emite(INCTOP, crArgNulo(), crArgNulo(), crArgNulo());
-		
-		if((yyvsp[(1) - (3)].tdef).tipo!=T_ENTERO){
-  			yyerror("la funcion tiene que ser de tipo int");
-  			//TODO: parar ejecucion
-  		} 
-  		
-  			nivel++;
-			cargaContexto(nivel);
-			dpar = TALLA_SEGENLACES;
-			old_dvar = dvar;
-			dvar = 0;
-  		
-		
+		//prepara entorno
+		nivel++;
+		cargaContexto(nivel);
+		dpar = TALLA_SEGENLACES;
+		old_dvar = dvar;
+		dvar = 0;	
 	;}
     break;
 
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 302 "asin.y"
-    {
+#line 251 "asin.y"
+    {	
 	
-		(yyval.tdef).tipo = (yyvsp[(1) - (6)].tdef).tipo;
-		printf("\nLOG: ref %d", (yyvsp[(5) - (6)].tdef).ref);
-		(yyval.tdef).ref = 99;//$5.ref;
-		printf("\nLOG: ref %d", (yyvsp[(5) - (6)].tdef).ref);
+		//comproba tipo
+		if((yyvsp[(1) - (6)].tdef).tipo!=T_ENTERO){
+  			yyerror("la funcion tiene que ser de tipo int");
+  		} 
+  		
+		
+		//inserta simbolo
+		if(!insertaSimbolo((yyvsp[(2) - (6)].ident), FUNCION, (yyvsp[(1) - (6)].tdef).tipo, si, nivel, (yyvsp[(5) - (6)].tdef).ref)){
+			yyerror("funcion repetida");
+		}
+		
+		//detecta el main
+		if(strcmp("main",(yyvsp[(2) - (6)].ident)) == 0){
+			if(hayMain==0){
+				hayMain = 1;
+				completaLans(lansMain, crArgEtiqueta(si));
+			} else {
+				yyerror("hay dos declaraciones de main en el programa");
+			}		
+		}
+		
+		//emision de codigo por la inicializacion del RA de la funcion
+		emite(PUSHFP, crArgNulo(), crArgNulo(), crArgNulo());
+		emite(FPTOP, crArgNulo(), crArgNulo(), crArgNulo());	
+  		lansDespFuncion = creaLans(si);	
+		emite(INCTOP, crArgNulo(), crArgNulo(), crArgNulo());
+		
+		
+		
+		(yyval.tdef).ref = (yyvsp[(5) - (6)].tdef).ref;
+		(yyval.tdef).talla = (yyvsp[(5) - (6)].tdef).talla; //suma del tamaño de los parametros
 		(yyval.tdef).id = (yyvsp[(2) - (6)].ident);
-		(yyval.tdef).talla = dpar;//$1.talla;		
+		(yyval.tdef).tipo = (yyvsp[(1) - (6)].tdef).tipo;
 		
 		
-		//init: por defecto pongo que lafuncion no haya return 
-		hayReturn = 0;
-		tallaReturn = (yyvsp[(1) - (6)].tdef).talla;
 	;}
     break;
 
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 318 "asin.y"
+#line 291 "asin.y"
     {
 		(yyval.tdef).ref = insertaInfoDominio(-1, T_VACIO);
 	;}
@@ -1852,7 +1823,7 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 322 "asin.y"
+#line 295 "asin.y"
     {
   		(yyval.tdef).ref = (yyvsp[(1) - (1)].tdef).ref;
   	;}
@@ -1861,17 +1832,18 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 327 "asin.y"
+#line 300 "asin.y"
     {
   		if((yyvsp[(1) - (2)].tdef).tipo!=T_ENTERO){
   			yyerror("los parametro tiene que ser de tipo int");
   		} else {
 	  		//RECUERDA: codigo duplicado
-	  		
+	  		dpar += (yyvsp[(1) - (2)].tdef).talla;
+	  			printf("\nLOG par %s desp %d nivel %d", (yyvsp[(2) - (2)].ident), nivel, -dpar);
 			if(!insertaSimbolo((yyvsp[(2) - (2)].ident), PARAMETRO, (yyvsp[(1) - (2)].tdef).tipo, -dpar, nivel, -1)){
 				yyerror("Error en la declaracion de paramentro");
 			} else {
-				dpar += (yyvsp[(1) - (2)].tdef).talla;
+				
 				(yyval.tdef).ref = insertaInfoDominio(-1, (yyvsp[(1) - (2)].tdef).tipo);
 			}
 		}
@@ -1881,20 +1853,21 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
   case 20:
 
 /* Line 1455 of yacc.c  */
-#line 342 "asin.y"
+#line 316 "asin.y"
     {
-  		if((yyvsp[(1) - (4)].tdef).tipo!=T_ENTERO){
+  		if((yyvsp[(1) - (3)].tdef).tipo!=T_ENTERO){
   			yyerror("los parametro tiene que ser de tipo int");
   		} else {
 	  		//RECUERDA: codigo duplicado
-	  		printf("\ndeclarando parametro (b) %s", (yyvsp[(2) - (4)].ident));
-	  		if(!insertaSimbolo((yyvsp[(2) - (4)].ident), PARAMETRO, (yyvsp[(1) - (4)].tdef).tipo, -dpar, nivel, -1)){
+	  		dpar += (yyvsp[(1) - (3)].tdef).talla;
+	  			printf("\nLOG par %s desp %d nivel %d", (yyvsp[(2) - (3)].ident), nivel, -dpar);
+	  		if(!insertaSimbolo((yyvsp[(2) - (3)].ident), PARAMETRO, (yyvsp[(1) - (3)].tdef).tipo, -dpar, nivel, -1)){
 				yyerror("Error en la declaracion de paramentro");
 			} else {
-				dpar += (yyvsp[(1) - (4)].tdef).talla;
+				
 			}
-			(yyval.tdef).ref = insertaInfoDominio((yyvsp[(4) - (4)].tdef).ref, (yyvsp[(1) - (4)].tdef).tipo);
-			//mostrarTDS(nivel);
+			
+	
 		}
   	;}
     break;
@@ -1902,75 +1875,83 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
   case 21:
 
 /* Line 1455 of yacc.c  */
-#line 359 "asin.y"
+#line 333 "asin.y"
     {
-		(yyval.tdef).talla = (yyvsp[(2) - (4)].tdef).talla;
-	;}
+  	 	(yyval.tdef).ref = insertaInfoDominio((yyvsp[(5) - (5)].tdef).ref, (yyvsp[(1) - (5)].tdef).tipo);
+  	 	(yyval.tdef) = (yyvsp[(5) - (5)].tdef);
+  	 ;}
     break;
 
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 364 "asin.y"
+#line 339 "asin.y"
     {
-		mostrarTDS(nivel);
-		(yyval.tdef).talla = dvar;
-	
+		(yyval.tdef).talla = (yyvsp[(2) - (4)].tdef).talla;
 	;}
     break;
 
   case 23:
 
 /* Line 1455 of yacc.c  */
-#line 370 "asin.y"
+#line 344 "asin.y"
     {
+		(yyval.tdef).talla = dvar;
 		
+	;}
+    break;
+
+  case 24:
+
+/* Line 1455 of yacc.c  */
+#line 349 "asin.y"
+    {
+
 		if(!insertaSimbolo((yyvsp[(2) - (2)].tdef).id, VARIABLE, (yyvsp[(2) - (2)].tdef).tipo, dvar, nivel, (yyvsp[(2) - (2)].tdef).ref)){
 			yyerror("---> identificador repetido");
 		} else {
 			dvar += (yyvsp[(2) - (2)].tdef).talla; // update shift
 		}
 		
-		mostrarTDS(nivel);
 		
 		(yyval.tdef).talla = dvar;
 		
 	;}
     break;
 
-  case 26:
+  case 27:
 
 /* Line 1455 of yacc.c  */
-#line 388 "asin.y"
+#line 366 "asin.y"
     {
 		nivel++;
 		cargaContexto(nivel);
 	;}
     break;
 
-  case 27:
+  case 28:
 
 /* Line 1455 of yacc.c  */
-#line 393 "asin.y"
+#line 371 "asin.y"
     {
 		descargaContexto(nivel);
 		nivel--;
 	;}
     break;
 
-  case 33:
+  case 34:
 
 /* Line 1455 of yacc.c  */
-#line 404 "asin.y"
+#line 382 "asin.y"
     {
 		
 	;}
     break;
 
-  case 35:
+  case 36:
 
 /* Line 1455 of yacc.c  */
-#line 410 "asin.y"
+#line 388 "asin.y"
     {
 		SIMB sim = obtenerSimbolo((yyvsp[(3) - (3)].ident));
 		if(sim.categoria == NULO)
@@ -1985,19 +1966,19 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
 	;}
     break;
 
-  case 37:
+  case 38:
 
 /* Line 1455 of yacc.c  */
-#line 425 "asin.y"
+#line 403 "asin.y"
     {
 		emite(EWRITE, crArgNulo(), crArgNulo(), (yyvsp[(3) - (3)].tdef).exp);
 	;}
     break;
 
-  case 39:
+  case 40:
 
 /* Line 1455 of yacc.c  */
-#line 431 "asin.y"
+#line 409 "asin.y"
     {
 		//condiccion para saltar al cuerpo del else
 		(yyval.tdef).instr1 = creaLans(si);
@@ -2005,40 +1986,41 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
 	;}
     break;
 
-  case 40:
-
-/* Line 1455 of yacc.c  */
-#line 437 "asin.y"
-    {
-		(yyval.tdef).instr2 = creaLans(si); //fin del bloque if-else
-		emite(GOTOS, crArgNulo(), crArgNulo(), crArgNulo());
-		completaLans((yyval.tdef).instr1, crArgEtiqueta(si));		
-	;}
-    break;
-
   case 41:
 
 /* Line 1455 of yacc.c  */
-#line 443 "asin.y"
+#line 415 "asin.y"
     {
-		completaLans((yyval.tdef).instr2, crArgEtiqueta(si));
+		(yyval.tdef).instr2 = creaLans(si); //fin del bloque if-else
+		emite(GOTOS, crArgNulo(), crArgNulo(), crArgNulo());
+		completaLans((yyvsp[(5) - (6)].tdef).instr1, crArgEtiqueta(si));		
 	;}
     break;
 
   case 42:
 
 /* Line 1455 of yacc.c  */
-#line 448 "asin.y"
+#line 421 "asin.y"
     {
-		//principio del bucle (justo despues de las instrucciones de inicializaccion)
-		(yyval.tdef).instr1 = si;
+		
+		completaLans((yyvsp[(7) - (9)].tdef).instr2, crArgEtiqueta(si));
 	;}
     break;
 
   case 43:
 
 /* Line 1455 of yacc.c  */
-#line 453 "asin.y"
+#line 427 "asin.y"
+    {
+		//principio del bucle (justo despues de las instrucciones de inicializaccion)
+		(yyval.tdef).instr1 = si;
+	;}
+    break;
+
+  case 44:
+
+/* Line 1455 of yacc.c  */
+#line 432 "asin.y"
     {
 		//instruccion para salir del bucle
 		(yyvsp[(6) - (7)].tdef).instr1 = creaLans(si);
@@ -2049,10 +2031,10 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
 	;}
     break;
 
-  case 44:
+  case 45:
 
 /* Line 1455 of yacc.c  */
-#line 462 "asin.y"
+#line 441 "asin.y"
     {
 		//inicio de la funcion de incremento
 		(yyvsp[(8) - (10)].tdef).instr1 = si;
@@ -2062,10 +2044,10 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
 	;}
     break;
 
-  case 45:
+  case 46:
 
 /* Line 1455 of yacc.c  */
-#line 470 "asin.y"
+#line 449 "asin.y"
     {
 		emite(GOTOS,crArgNulo(),crArgNulo(), crArgEtiqueta((yyvsp[(8) - (12)].tdef).instr1));
 		
@@ -2073,28 +2055,28 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
 	;}
     break;
 
-  case 46:
+  case 47:
 
 /* Line 1455 of yacc.c  */
-#line 477 "asin.y"
+#line 456 "asin.y"
     {
 		
 	;}
     break;
 
-  case 47:
+  case 48:
 
 /* Line 1455 of yacc.c  */
-#line 481 "asin.y"
+#line 460 "asin.y"
     {
   		(yyval.tdef) = (yyvsp[(1) - (1)].tdef);
   	;}
     break;
 
-  case 48:
+  case 49:
 
 /* Line 1455 of yacc.c  */
-#line 486 "asin.y"
+#line 465 "asin.y"
     {
 		//enciende el flag de existencian de return en la funcion
 		hayReturn = 1;
@@ -2113,19 +2095,19 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
 	;}
     break;
 
-  case 49:
+  case 50:
 
 /* Line 1455 of yacc.c  */
-#line 505 "asin.y"
+#line 484 "asin.y"
     {
 		(yyval.tdef) = (yyvsp[(1) - (1)].tdef);
 	;}
     break;
 
-  case 50:
+  case 51:
 
 /* Line 1455 of yacc.c  */
-#line 509 "asin.y"
+#line 488 "asin.y"
     {
   		
   		SIMB id;
@@ -2133,50 +2115,48 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
 		if (id.categoria == NULO){
 			yyerror("Identificador no declarado");
 		}
-		if ((id.tipo==(yyvsp[(3) - (3)].tdef).tipo)&&(id.tipo==T_ENTERO)){ 
-			(yyval.tdef).tipo = T_ENTERO;
-		}
-		else {
+		if ((id.tipo==(yyvsp[(3) - (3)].tdef).tipo)){ 
+			(yyval.tdef).tipo = (yyvsp[(3) - (3)].tdef).tipo;
+	
 		
-			if (((yyvsp[(3) - (3)].tdef).tipo==T_ERROR)||(id.tipo==T_ERROR)){
-				yyerror("Error de tipos en la asignacion de la ((expresion))");
+			TIPO_ARG id_arg = crArgPosicion(id.nivel, id.desp);
+			TIPO_ARG exp_arg = (yyvsp[(3) - (3)].tdef).exp;
+		
+		
+			switch((yyvsp[(2) - (3)].operador)){
+				case MASASIG: // id = id + exp
+					emite(ESUM, id_arg, exp_arg, id_arg);
+					printf("\nemite asignacion de variable %s+=%d", (yyvsp[(1) - (3)].ident), id_arg.val.i);
+					break;
+				case MENOSASIG:
+					emite(EDIF, id_arg, exp_arg, id_arg);
+					printf("\nemite asignacion de variable %s-=%d", (yyvsp[(1) - (3)].ident), id_arg.val.i);
+					break;
+				case ASIG:
+					emite(EASIG, exp_arg, crArgNulo(), id_arg);
+					printf("\nemite asignacion de variable %s=%d", (yyvsp[(1) - (3)].ident), id_arg.val.i);
+					break;
+
 			}
+		
+			//printf("\nemite asignacion de variable para %s (sube valor arriba)", $1);
+			//emite(EASIG, id_arg, crArgNulo(), $$);
+			(yyval.tdef).exp = id_arg;
+			(yyval.tdef).tipo = id.tipo;
+  		
+  		}
+		else {
+			
+			yyerror("Error de tipos en la asignacion de la ((expresion))");
 			(yyval.tdef).tipo=T_ERROR;
 		}
-		
-		TIPO_ARG id_arg = crArgPosicion(id.nivel, id.desp);
-		TIPO_ARG exp_arg = (yyvsp[(3) - (3)].tdef).exp;
-		
-		
-		switch((yyvsp[(2) - (3)].operador)){
-			case MASASIG: // id = id + exp
-				emite(ESUM, id_arg, exp_arg, id_arg);
-				printf("\nemite asignacion de variable %s+=%d", (yyvsp[(1) - (3)].ident), id_arg.val.i);
-				break;
-			case MENOSASIG:
-				emite(EDIF, id_arg, exp_arg, id_arg);
-				printf("\nemite asignacion de variable %s-=%d", (yyvsp[(1) - (3)].ident), id_arg.val.i);
-				break;
-			case ASIG:
-				emite(EASIG, exp_arg, crArgNulo(), id_arg);
-				printf("\nemite asignacion de variable %s=%d", (yyvsp[(1) - (3)].ident), id_arg.val.i);
-				break;
-
-		}
-		
-		//printf("\nemite asignacion de variable para %s (sube valor arriba)", $1);
-		//emite(EASIG, id_arg, crArgNulo(), $$);
-		(yyval.tdef).exp = id_arg;
-		(yyval.tdef).tipo = id.tipo;
-  		
-  		
   	;}
     break;
 
-  case 51:
+  case 52:
 
 /* Line 1455 of yacc.c  */
-#line 555 "asin.y"
+#line 532 "asin.y"
     {
 		SIMB id;
 		
@@ -2184,6 +2164,9 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
 		if(id.categoria==NULO){
 			yyerror("variable array no declarada");	
 			(yyval.tdef).tipo = T_ERROR;
+		}if(id.tipo!=T_ARRAY)
+		{
+			yyerror("La variable no es de tipo array.");
 		} else {
 			TIPO_ARG indice = (yyvsp[(3) - (6)].tdef).exp; //indice
 			TIPO_ARG valor = (yyvsp[(6) - (6)].tdef).exp; // valor de la expresion para asignar
@@ -2211,10 +2194,10 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
 	;}
     break;
 
-  case 52:
+  case 53:
 
 /* Line 1455 of yacc.c  */
-#line 588 "asin.y"
+#line 568 "asin.y"
     {
 		SIMB id;
 		REG campo;		
@@ -2242,19 +2225,19 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
   	;}
     break;
 
-  case 53:
+  case 54:
 
 /* Line 1455 of yacc.c  */
-#line 615 "asin.y"
+#line 595 "asin.y"
     {
   		(yyval.tdef) = (yyvsp[(1) - (1)].tdef);
   	;}
     break;
 
-  case 54:
+  case 55:
 
 /* Line 1455 of yacc.c  */
-#line 619 "asin.y"
+#line 599 "asin.y"
     {
    		int oprel;
   		
@@ -2285,19 +2268,19 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
   	;}
     break;
 
-  case 55:
+  case 56:
 
 /* Line 1455 of yacc.c  */
-#line 649 "asin.y"
+#line 629 "asin.y"
     {
 		(yyval.tdef) = (yyvsp[(1) - (1)].tdef);
 	;}
     break;
 
-  case 56:
+  case 57:
 
 /* Line 1455 of yacc.c  */
-#line 653 "asin.y"
+#line 633 "asin.y"
     {
   		int oprel;
   		
@@ -2336,19 +2319,19 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
   	;}
     break;
 
-  case 57:
+  case 58:
 
 /* Line 1455 of yacc.c  */
-#line 691 "asin.y"
+#line 671 "asin.y"
     {
 		(yyval.tdef) = (yyvsp[(1) - (1)].tdef);
 	;}
     break;
 
-  case 58:
+  case 59:
 
 /* Line 1455 of yacc.c  */
-#line 695 "asin.y"
+#line 675 "asin.y"
     {
   		TIPO_ARG exp1_arg = (yyvsp[(1) - (3)].tdef).exp;
   		TIPO_ARG exp2_arg = (yyvsp[(3) - (3)].tdef).exp;
@@ -2371,19 +2354,19 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
   	;}
     break;
 
-  case 59:
+  case 60:
 
 /* Line 1455 of yacc.c  */
-#line 717 "asin.y"
+#line 697 "asin.y"
     {
 		(yyval.tdef) = (yyvsp[(1) - (1)].tdef);
 	;}
     break;
 
-  case 60:
+  case 61:
 
 /* Line 1455 of yacc.c  */
-#line 721 "asin.y"
+#line 701 "asin.y"
     {
   		TIPO_ARG exp1_arg = (yyvsp[(1) - (3)].tdef).exp;
   		TIPO_ARG exp2_arg = (yyvsp[(3) - (3)].tdef).exp;
@@ -2405,19 +2388,19 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
   	;}
     break;
 
-  case 61:
+  case 62:
 
 /* Line 1455 of yacc.c  */
-#line 742 "asin.y"
+#line 722 "asin.y"
     {
 		(yyval.tdef) = (yyvsp[(1) - (1)].tdef);
 	;}
     break;
 
-  case 62:
+  case 63:
 
 /* Line 1455 of yacc.c  */
-#line 746 "asin.y"
+#line 726 "asin.y"
     {
   		TIPO_ARG exp_arg = (yyvsp[(2) - (2)].tdef).exp;
   		
@@ -2427,16 +2410,16 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
 	  		emite(EDIF, crArgEntero(0), exp_arg, (yyval.tdef).exp);
   		} else {
 	  		//printf("\nemite expresionUnaria (+)");
-	  		//emite(EASIG, exp_arg, crArgNulo(), $$);
+	  		emite(EASIG, exp_arg, crArgNulo(), (yyval.tdef).exp);
 	  		(yyval.tdef) = (yyvsp[(2) - (2)].tdef);
   		}
   	;}
     break;
 
-  case 63:
+  case 64:
 
 /* Line 1455 of yacc.c  */
-#line 760 "asin.y"
+#line 740 "asin.y"
     {
   		 		
   		SIMB sim; 
@@ -2467,32 +2450,35 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
   	;}
     break;
 
-  case 64:
+  case 65:
 
 /* Line 1455 of yacc.c  */
-#line 790 "asin.y"
+#line 770 "asin.y"
     {
 		SIMB id;
-		
 		id = obtenerSimbolo((yyvsp[(1) - (4)].ident));
 		if(id.categoria==NULO){
-			yyerror("variable array no declarada");	
+			yyerror("Variable array no declarada");	
 			(yyval.tdef).tipo = T_ERROR;
-		} else {
+		} else 
+		if(id.tipo!=T_ARRAY)
+		{
+			yyerror("La variable no es de tipo array.");
+		}else
+		{
 			TIPO_ARG indice = (yyvsp[(3) - (4)].tdef).exp;
 			(yyval.tdef).exp = crArgPosicion(nivel, creaVarTemp());
 			emite(EAV, crArgPosicion(id.nivel, id.desp), indice, (yyval.tdef).exp);
 		}
-		
-		
+
   		(yyval.tdef).tipo = id.tipo;
 	;}
     break;
 
-  case 65:
+  case 66:
 
 /* Line 1455 of yacc.c  */
-#line 807 "asin.y"
+#line 790 "asin.y"
     {
 		SIMB id;
 		REG campo;		
@@ -2501,7 +2487,10 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
 		if(id.categoria==NULO){
 			yyerror("variable struc no declarada");	
 			(yyval.tdef).tipo = T_ERROR;
-		} else {
+		} if(id.tipo!=T_RECORD)
+		{
+			yyerror("La variable no es de tipo registro.");
+		}else {
 			campo = obtenerInfoCampo(id.ref, (yyvsp[(3) - (3)].ident));
 			if(campo.tipo==T_ERROR){
 				yyerror("el campo no es parte de la struct");	
@@ -2514,19 +2503,19 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
   	;}
     break;
 
-  case 66:
+  case 67:
 
 /* Line 1455 of yacc.c  */
-#line 827 "asin.y"
+#line 813 "asin.y"
     {
 		(yyval.tdef).tipo = T_ENTERO;
 	;}
     break;
 
-  case 67:
+  case 68:
 
 /* Line 1455 of yacc.c  */
-#line 831 "asin.y"
+#line 817 "asin.y"
     {
 		//obtener simbolo de la funcion desde la tabla de simbolos
 		SIMB id = obtenerSimbolo((yyvsp[(1) - (4)].ident)); 
@@ -2557,19 +2546,19 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
 	;}
     break;
 
-  case 68:
+  case 69:
 
 /* Line 1455 of yacc.c  */
-#line 860 "asin.y"
+#line 846 "asin.y"
     {
 		(yyval.tdef) = (yyvsp[(2) - (3)].tdef);
 	;}
     break;
 
-  case 69:
+  case 70:
 
 /* Line 1455 of yacc.c  */
-#line 863 "asin.y"
+#line 849 "asin.y"
     {
   			SIMB id = obtenerSimbolo((yyvsp[(1) - (1)].ident));
   			
@@ -2577,6 +2566,7 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
 	  			yyerror("\n variable NO declarada todavia, primer uso");
 	  			(yyval.tdef).tipo = T_ERROR;
 	  		} else {
+	  			printf("\nLOG var %s desp %d nivel %d", (yyvsp[(1) - (1)].ident), id.nivel, id.desp);
 	  			(yyval.tdef).exp = crArgPosicion(id.nivel, id.desp);
 	  			(yyval.tdef).tipo = id.tipo; 
 	  		}
@@ -2585,29 +2575,29 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
   		;}
     break;
 
-  case 70:
+  case 71:
 
 /* Line 1455 of yacc.c  */
-#line 877 "asin.y"
+#line 864 "asin.y"
     {
   		(yyval.tdef).exp = crArgEntero((yyvsp[(1) - (1)].cent));
   		(yyval.tdef).tipo = T_ENTERO;
   	;}
     break;
 
-  case 71:
+  case 72:
 
 /* Line 1455 of yacc.c  */
-#line 883 "asin.y"
+#line 870 "asin.y"
     {
 		(yyval.tdef).ref = insertaInfoDominio(-1,T_VACIO);
 	;}
     break;
 
-  case 72:
+  case 73:
 
 /* Line 1455 of yacc.c  */
-#line 887 "asin.y"
+#line 874 "asin.y"
     {
 		if((yyvsp[(1) - (1)].tdef).tipo != T_ERROR){
 			(yyval.tdef).ref = (yyvsp[(1) - (1)].tdef).ref;
@@ -2615,10 +2605,10 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
 	;}
     break;
 
-  case 73:
+  case 74:
 
 /* Line 1455 of yacc.c  */
-#line 894 "asin.y"
+#line 881 "asin.y"
     {
 		
 		(yyval.tdef).ref = insertaInfoDominio(-1, (yyvsp[(1) - (1)].tdef).tipo);
@@ -2626,164 +2616,164 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
 	;}
     break;
 
-  case 74:
+  case 75:
 
 /* Line 1455 of yacc.c  */
-#line 900 "asin.y"
+#line 887 "asin.y"
     {
 		(yyval.tdef).ref = insertaInfoDominio((yyvsp[(3) - (3)].tdef).ref, (yyvsp[(1) - (3)].tdef).tipo);
 		emite(EPUSH, crArgNulo(), crArgNulo(), (yyvsp[(1) - (3)].tdef).exp);
 	;}
     break;
 
-  case 75:
-
-/* Line 1455 of yacc.c  */
-#line 906 "asin.y"
-    {
-		(yyval.operador) = ASIG;
-	;}
-    break;
-
   case 76:
 
 /* Line 1455 of yacc.c  */
-#line 910 "asin.y"
+#line 893 "asin.y"
     {
-		(yyval.operador) = MASASIG;
+		(yyval.operador) = ASIG;
 	;}
     break;
 
   case 77:
 
 /* Line 1455 of yacc.c  */
-#line 914 "asin.y"
+#line 897 "asin.y"
     {
-		(yyval.operador) = MENOSASIG;
+		(yyval.operador) = MASASIG;
 	;}
     break;
 
   case 78:
 
 /* Line 1455 of yacc.c  */
-#line 919 "asin.y"
+#line 901 "asin.y"
     {
-		(yyval.operador) = IGUAL;
+		(yyval.operador) = MENOSASIG;
 	;}
     break;
 
   case 79:
 
 /* Line 1455 of yacc.c  */
-#line 923 "asin.y"
+#line 906 "asin.y"
     {
-		(yyval.operador) = DISTINTO;
+		(yyval.operador) = IGUAL;
 	;}
     break;
 
   case 80:
 
 /* Line 1455 of yacc.c  */
-#line 928 "asin.y"
+#line 910 "asin.y"
     {
-		(yyval.operador) = MAYOR;
+		(yyval.operador) = DISTINTO;
 	;}
     break;
 
   case 81:
 
 /* Line 1455 of yacc.c  */
-#line 932 "asin.y"
+#line 915 "asin.y"
     {
-		(yyval.operador) = MAYORIG;
+		(yyval.operador) = MAYOR;
 	;}
     break;
 
   case 82:
 
 /* Line 1455 of yacc.c  */
-#line 936 "asin.y"
+#line 919 "asin.y"
     {
-		(yyval.operador) = MENOR;
+		(yyval.operador) = MAYORIG;
 	;}
     break;
 
   case 83:
 
 /* Line 1455 of yacc.c  */
-#line 940 "asin.y"
+#line 923 "asin.y"
     {
-		(yyval.operador) = MENORIG;
+		(yyval.operador) = MENOR;
 	;}
     break;
 
   case 84:
 
 /* Line 1455 of yacc.c  */
-#line 945 "asin.y"
+#line 927 "asin.y"
     {
-		(yyval.operador) = MAS;
+		(yyval.operador) = MENORIG;
 	;}
     break;
 
   case 85:
 
 /* Line 1455 of yacc.c  */
-#line 949 "asin.y"
+#line 932 "asin.y"
     {
-		(yyval.operador) = MENOS;
+		(yyval.operador) = MAS;
 	;}
     break;
 
   case 86:
 
 /* Line 1455 of yacc.c  */
-#line 954 "asin.y"
+#line 936 "asin.y"
     {
-		(yyval.operador) = POR;
+		(yyval.operador) = MENOS;
 	;}
     break;
 
   case 87:
 
 /* Line 1455 of yacc.c  */
-#line 958 "asin.y"
+#line 941 "asin.y"
     {
-		(yyval.operador) = DIV;
+		(yyval.operador) = POR;
 	;}
     break;
 
   case 88:
 
 /* Line 1455 of yacc.c  */
-#line 963 "asin.y"
+#line 945 "asin.y"
     {
-		(yyval.operador) = MASMAS;
+		(yyval.operador) = DIV;
 	;}
     break;
 
   case 89:
 
 /* Line 1455 of yacc.c  */
-#line 967 "asin.y"
+#line 950 "asin.y"
     {
-		(yyval.operador) = MENOSMENOS;
+		(yyval.operador) = MASMAS;
 	;}
     break;
 
   case 90:
 
 /* Line 1455 of yacc.c  */
-#line 972 "asin.y"
+#line 954 "asin.y"
     {
-		(yyval.operador) = MAS;
+		(yyval.operador) = MENOSMENOS;
 	;}
     break;
 
   case 91:
 
 /* Line 1455 of yacc.c  */
-#line 976 "asin.y"
+#line 959 "asin.y"
+    {
+		(yyval.operador) = MAS;
+	;}
+    break;
+
+  case 92:
+
+/* Line 1455 of yacc.c  */
+#line 963 "asin.y"
     {
 		(yyval.operador) = MENOS;
 	;}
@@ -2792,7 +2782,7 @@ printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", (yyvsp[(1) - (1)].t
 
 
 /* Line 1455 of yacc.c  */
-#line 2796 "asin.c"
+#line 2786 "asin.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -3004,14 +2994,16 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 980 "asin.y"
+#line 967 "asin.y"
 
 
 
 /* Llamada por yyparse ante un error */
 yyerror (char *s)
 {
-printf ("\nERROR ->Linea %d: %s", yylineno, s);
+
+	printf ("\nERROR ->Linea %d: %s", yylineno, s);
+	numErrores++;
 }
 
 

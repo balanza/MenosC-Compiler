@@ -2,41 +2,10 @@
 #include <stdio.h>
 #include "include/libgci.h"
 #include "include/libtds.h"
+#include "include/header.h"
 extern int yylineno;
 
-/**************** Variables globales **********************/
-int old_dvar;              /* Desplazamiento en el Segmento de Variables  */
-int dpar;              /* Desplazamiento en el Segmento de Parametros de funcion  */
-int dcmp;              /* Desplazamiento del campo en una estructura  */
-int nivel; 			   /* Nivel de anidamiento */
-int hayMain;           /* Se pone a 1 cuando encontramos la funcion main */
-int lansMain;          /* instruccion a la cual se encuentra el main */    
-int lansDespGlobal;         /* tamaño del desplazamento global */ 
-int hayReturn;         /* Indica si una funcion tiene una devolucion de valor*/ 
-int tallaReturn;       /* Talla del eventual valor de return*/
-int lansDespFuncion;    /* Se utiliza para resolver la lans del tamaño del desplazamento inicial de una funcion*/
 
-
-
-/************************************* Codigos para los distintos operadores */
-#define DISTINTO      0
-#define IGUAL         1
-#define MAYOR         2
-#define MENOR         3
-#define MAYORIG       4
-#define MENORIG       5
-#define POR           6
-#define DIV           7
-#define MAS           8
-#define MENOS         9
-#define ASIG         10
-#define MASASIG      11
-#define MENOSASIG    12
-#define MASMAS       13
-#define MENOSMENOS   14 
-/******************************************* Tallas de los tipos y segmentos */
-#define TALLA_ENTERO     1
-#define TALLA_SEGENLACES 2       /* Talla del segmento de Enlaces de Control */
 
 %}
 /**************** Definiciones para la gestion de BISON **********************/
@@ -111,6 +80,9 @@ programa:
 		hayMain = 0;
 		cargaContexto(nivel);
 		
+ 		numErrores = 0;
+ 		
+		
 		/**************************** Desplazamiento global ****************************/
 		// 	Lo calculamos sumando la talla de todas las "declaraciones de variables
 		//	que se dan en la declaración inicial. 				        
@@ -133,8 +105,9 @@ secuenciaDeclaraciones
 			yyerror("ni un main en todo el programa");
 		}
 		
+		mostrarTDS(nivel);
+		
 		descargaContexto(nivel);
-		vuelcaCodigo("codigo");
 		
 	}
 ;
@@ -162,33 +135,6 @@ declaracion: declaracionVariable
 	}
   | declaracionFuncion 
 	{
-printf("\nLOG: decalara funcion %s tipo %d nivel %d ref %d", $1.id, $1.tipo, nivel, $1.ref);
-		if(!insertaSimbolo($1.id, FUNCION, $1.tipo, si, nivel, $1.ref)){
-			yyerror("---> funcion repetida");
-		}
-		
-		//detectando main
-		if(strcmp("main",$1.id) == 0){
-			if(hayMain==0){
-				hayMain = 1;
-				completaLans(lansMain, crArgEtiqueta(si));
-			} else {
-				yyerror("hay dos declaraciones de main en el programa");
-			}		
-		}
-		
-		
-		if(hayReturn == 1){
-			$1.talla += tallaReturn;
-		}
-		
-		completaLans(lansDespFuncion, crArgEntero($1.talla));
-				
-		
-		emite(RET, crArgNulo(), crArgNulo(), crArgNulo());
-		
-		
-		//las funciones no ocupan espacio en la memoria estatica
 		$$.talla = 0;
 	}
 ;
@@ -202,11 +148,15 @@ declaracionVariable: tipo ID_ PUNTOYCOMA_
 	}
   | tipo ID_ CORABR_ CTE_ CORCER_ PUNTOYCOMA_
   {
-  	//printf("\n cte: %d, tipo: %d", $4, $1.tipo);
+  	
   	if($1.tipo!=T_ENTERO){
 		yyerror("el tipo de los vectores tiene que ser int");
 	} else if($4<=0){
 		yyerror("el array debe contener un numero positivo de elementos");
+		$$.id = $2;
+		$$.tipo = T_ERROR;
+		$$.talla = 1; // ???
+		$$.ref = insertaInfoArray($1.tipo, 4);
 	} else {	
 		$$.id = $2;
 		$$.tipo = T_ARRAY;
@@ -254,62 +204,87 @@ listaCampos: declaracionVariable
 ;
 declaracionFuncion: cabeceraFuncion bloque 
 	{
+		//calcula tamaño del RA
+		/*int t_ra;
+		t_ra = $2.talla + $3.talla;
+		if(hayReturn == 1){
+			t_ra += tallaReturn;
+		}*/
+	
+		//completa lans de INCTOP		
+		completaLans(lansDespFuncion, crArgEntero(dvar));
+	
+		//emite funciones de salida de la funcion
+		emite(TOPFP, crArgNulo(), crArgNulo(), crArgNulo());
+		emite(FPPOP, crArgNulo(), crArgNulo(), crArgNulo());
+		
+		
+		//detecta la funcion main, y define el cierre de de la funcion (o del programa entero)
+		if(strcmp("main",$1.id) == 0){
+			emite(FIN, crArgNulo(), crArgNulo(), crArgNulo());
+		} else {
+			emite(RET, crArgNulo(), crArgNulo(), crArgNulo());
+		}
+
+
+		mostrarTDS(nivel); 
+	
+		//restaura entorno
 		descargaContexto(nivel);
 		nivel--;
-		dvar = old_dvar;
-		
-		$$.tipo = $1.tipo;
-		$$.ref = $1.ref;
-		$$.id = $1.id;
-		/*
-			la talla de una funcion nos dice el tamaño del RA, siendo la suma de:
-			 1. talla de parametros
-			 2. talla de segmento de enlaces
-			 3. talla de valor devuelto
-			(1) está contenido en el no-terminal cabeceraFuncion
-			(2) en bloque
-			(3) si hayReturn==1, es la talla del tipo --> lo comprobamos en declaracionFuncion
-		*/
-		$$.talla = $1.talla + $2.talla; //
-		
-		
+		dvar = old_dvar + 1;
 		
 	}
 ;
-cabeceraFuncion: tipo ID_ PARABR_ 
+cabeceraFuncion: 
+
+	tipo ID_ 
 	{
+		//prepara entorno
+		nivel++;
+		cargaContexto(nivel);
+		dpar = TALLA_SEGENLACES;
+		old_dvar = dvar;
+		dvar = 0;	
+	}
+	PARABR_ parametrosFormales  PARCER_
+	{	
 	
+		//comproba tipo
+		if($<tdef>1.tipo!=T_ENTERO){
+  			yyerror("la funcion tiene que ser de tipo int");
+  		} 
+  		
+		
+		//inserta simbolo
+		if(!insertaSimbolo($2, FUNCION, $1.tipo, si, nivel, $5.ref)){
+			yyerror("funcion repetida");
+		}
+		
+		//detecta el main
+		if(strcmp("main",$2) == 0){
+			if(hayMain==0){
+				hayMain = 1;
+				completaLans(lansMain, crArgEtiqueta(si));
+			} else {
+				yyerror("hay dos declaraciones de main en el programa");
+			}		
+		}
+		
 		//emision de codigo por la inicializacion del RA de la funcion
 		emite(PUSHFP, crArgNulo(), crArgNulo(), crArgNulo());
 		emite(FPTOP, crArgNulo(), crArgNulo(), crArgNulo());	
   		lansDespFuncion = creaLans(si);	
 		emite(INCTOP, crArgNulo(), crArgNulo(), crArgNulo());
 		
-		if($1.tipo!=T_ENTERO){
-  			yyerror("la funcion tiene que ser de tipo int");
-  			//TODO: parar ejecucion
-  		} 
-  		
-  			nivel++;
-			cargaContexto(nivel);
-			dpar = TALLA_SEGENLACES;
-			old_dvar = dvar;
-			dvar = 0;
-  		
 		
-	} 
-	parametrosFormales  PARCER_
-	{
-	
-		$$.tipo = $1.tipo;
+		
 		$$.ref = $5.ref;
+		$$.talla = $5.talla; //suma del tamaño de los parametros
 		$$.id = $2;
-		$$.talla = dpar;//$1.talla;		
+		$$.tipo = $1.tipo;
 		
 		
-		//init: por defecto pongo que lafuncion no haya return 
-		hayReturn = 0;
-		tallaReturn = $1.talla;
 	}	
 ;
 parametrosFormales: 
@@ -327,31 +302,38 @@ listaParametrosFormales: tipo ID_
   			yyerror("los parametro tiene que ser de tipo int");
   		} else {
 	  		//RECUERDA: codigo duplicado
-	  		
+	  		dpar += $1.talla;
+	  			printf("\nLOG par %s desp %d nivel %d", $2, nivel, -dpar);
 			if(!insertaSimbolo($2, PARAMETRO, $1.tipo, -dpar, nivel, -1)){
 				yyerror("Error en la declaracion de paramentro");
 			} else {
-				dpar += $1.talla;
+				
 				$$.ref = insertaInfoDominio(-1, $1.tipo);
 			}
 		}
   	}
-  | tipo ID_ COMA_ listaParametrosFormales   	
+  | tipo ID_ COMA_  	
   	{
   		if($1.tipo!=T_ENTERO){
   			yyerror("los parametro tiene que ser de tipo int");
   		} else {
 	  		//RECUERDA: codigo duplicado
-	  		printf("\ndeclarando parametro (b) %s", $2);
+	  		dpar += $1.talla;
+	  			printf("\nLOG par %s desp %d nivel %d", $2, nivel, -dpar);
 	  		if(!insertaSimbolo($2, PARAMETRO, $1.tipo, -dpar, nivel, -1)){
 				yyerror("Error en la declaracion de paramentro");
 			} else {
-				dpar += $1.talla;
+				
 			}
-			$$.ref = insertaInfoDominio($4.ref, $1.tipo);
-			//mostrarTDS(nivel);
+			
+	
 		}
   	} 
+  	 listaParametrosFormales 
+  	 {
+  	 	$$.ref = insertaInfoDominio($5.ref, $1.tipo);
+  	 	$$ = $5;
+  	 }
 ;
 bloque: LLAVABR_ declaracionVariableLocal listaInstrucciones LLAVCER_ 
 	{
@@ -360,20 +342,18 @@ bloque: LLAVABR_ declaracionVariableLocal listaInstrucciones LLAVCER_
 ;
 declaracionVariableLocal: 
 	{
-		mostrarTDS(nivel);
 		$$.talla = dvar;
-	
+		
 	}
   | declaracionVariableLocal declaracionVariable
   	{
-		
+
 		if(!insertaSimbolo($2.id, VARIABLE, $2.tipo, dvar, nivel, $2.ref)){
 			yyerror("---> identificador repetido");
 		} else {
 			dvar += $2.talla; // update shift
 		}
 		
-		mostrarTDS(nivel);
 		
 		$$.talla = dvar;
 		
@@ -435,11 +415,12 @@ instruccionSeleccion: IF_ PARABR_ expresion PARCER_
 	{
 		$<tdef>$.instr2 = creaLans(si); //fin del bloque if-else
 		emite(GOTOS, crArgNulo(), crArgNulo(), crArgNulo());
-		completaLans($<tdef>$.instr1, crArgEtiqueta(si));		
+		completaLans($<tdef>5.instr1, crArgEtiqueta(si));		
 	}
 	ELSE_ instruccion
 	{
-		completaLans($<tdef>$.instr2, crArgEtiqueta(si));
+		
+		completaLans($<tdef>7.instr2, crArgEtiqueta(si));
 	}
 ;
 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ 
@@ -511,43 +492,41 @@ expresion: expresionIgualdad
 		if (id.categoria == NULO){
 			yyerror("Identificador no declarado");
 		}
-		if ((id.tipo==$3.tipo)&&(id.tipo==T_ENTERO)){ 
-			$$.tipo = T_ENTERO;
-		}
-		else {
+		if ((id.tipo==$3.tipo)){ 
+			$$.tipo = $3.tipo;
+	
 		
-			if (($3.tipo==T_ERROR)||(id.tipo==T_ERROR)){
-				yyerror("Error de tipos en la asignacion de la ((expresion))");
+			TIPO_ARG id_arg = crArgPosicion(id.nivel, id.desp);
+			TIPO_ARG exp_arg = $3.exp;
+		
+		
+			switch($2){
+				case MASASIG: // id = id + exp
+					emite(ESUM, id_arg, exp_arg, id_arg);
+					printf("\nemite asignacion de variable %s+=%d", $1, id_arg.val.i);
+					break;
+				case MENOSASIG:
+					emite(EDIF, id_arg, exp_arg, id_arg);
+					printf("\nemite asignacion de variable %s-=%d", $1, id_arg.val.i);
+					break;
+				case ASIG:
+					emite(EASIG, exp_arg, crArgNulo(), id_arg);
+					printf("\nemite asignacion de variable %s=%d", $1, id_arg.val.i);
+					break;
+
 			}
+		
+			//printf("\nemite asignacion de variable para %s (sube valor arriba)", $1);
+			//emite(EASIG, id_arg, crArgNulo(), $$);
+			$$.exp = id_arg;
+			$$.tipo = id.tipo;
+  		
+  		}
+		else {
+			
+			yyerror("Error de tipos en la asignacion de la ((expresion))");
 			$$.tipo=T_ERROR;
 		}
-		
-		TIPO_ARG id_arg = crArgPosicion(id.nivel, id.desp);
-		TIPO_ARG exp_arg = $3.exp;
-		
-		
-		switch($2){
-			case MASASIG: // id = id + exp
-				emite(ESUM, id_arg, exp_arg, id_arg);
-				printf("\nemite asignacion de variable %s+=%d", $1, id_arg.val.i);
-				break;
-			case MENOSASIG:
-				emite(EDIF, id_arg, exp_arg, id_arg);
-				printf("\nemite asignacion de variable %s-=%d", $1, id_arg.val.i);
-				break;
-			case ASIG:
-				emite(EASIG, exp_arg, crArgNulo(), id_arg);
-				printf("\nemite asignacion de variable %s=%d", $1, id_arg.val.i);
-				break;
-
-		}
-		
-		//printf("\nemite asignacion de variable para %s (sube valor arriba)", $1);
-		//emite(EASIG, id_arg, crArgNulo(), $$);
-		$$.exp = id_arg;
-		$$.tipo = id.tipo;
-  		
-  		
   	}
   | ID_ CORABR_ expresion CORCER_ operadorAsignacion expresion
   	{
@@ -557,6 +536,9 @@ expresion: expresionIgualdad
 		if(id.categoria==NULO){
 			yyerror("variable array no declarada");	
 			$$.tipo = T_ERROR;
+		}if(id.tipo!=T_ARRAY)
+		{
+			yyerror("La variable no es de tipo array.");
 		} else {
 			TIPO_ARG indice = $3.exp; //indice
 			TIPO_ARG valor = $6.exp; // valor de la expresion para asignar
@@ -750,7 +732,7 @@ expresionUnaria: expresionSufija
 	  		emite(EDIF, crArgEntero(0), exp_arg, $$.exp);
   		} else {
 	  		//printf("\nemite expresionUnaria (+)");
-	  		//emite(EASIG, exp_arg, crArgNulo(), $$);
+	  		emite(EASIG, exp_arg, crArgNulo(), $$.exp);
 	  		$$ = $2;
   		}
   	}
@@ -787,18 +769,21 @@ expresionUnaria: expresionSufija
 expresionSufija: ID_ CORABR_ expresion CORCER_
 	{
 		SIMB id;
-		
 		id = obtenerSimbolo($1);
 		if(id.categoria==NULO){
-			yyerror("variable array no declarada");	
+			yyerror("Variable array no declarada");	
 			$$.tipo = T_ERROR;
-		} else {
+		} else 
+		if(id.tipo!=T_ARRAY)
+		{
+			yyerror("La variable no es de tipo array.");
+		}else
+		{
 			TIPO_ARG indice = $3.exp;
 			$$.exp = crArgPosicion(nivel, creaVarTemp());
 			emite(EAV, crArgPosicion(id.nivel, id.desp), indice, $$.exp);
 		}
-		
-		
+
   		$$.tipo = id.tipo;
 	}
   | ID_ PUNTO_ ID_
@@ -810,7 +795,10 @@ expresionSufija: ID_ CORABR_ expresion CORCER_
 		if(id.categoria==NULO){
 			yyerror("variable struc no declarada");	
 			$$.tipo = T_ERROR;
-		} else {
+		} if(id.tipo!=T_RECORD)
+		{
+			yyerror("La variable no es de tipo registro.");
+		}else {
 			campo = obtenerInfoCampo(id.ref, $3);
 			if(campo.tipo==T_ERROR){
 				yyerror("el campo no es parte de la struct");	
@@ -865,6 +853,7 @@ expresionSufija: ID_ CORABR_ expresion CORCER_
 	  			yyerror("\n variable NO declarada todavia, primer uso");
 	  			$$.tipo = T_ERROR;
 	  		} else {
+	  			printf("\nLOG var %s desp %d nivel %d", $1, id.nivel, id.desp);
 	  			$$.exp = crArgPosicion(id.nivel, id.desp);
 	  			$$.tipo = id.tipo; 
 	  		}
@@ -981,7 +970,9 @@ operadorUnario: MAS_
 /* Llamada por yyparse ante un error */
 yyerror (char *s)
 {
-printf ("\nERROR ->Linea %d: %s", yylineno, s);
+
+	printf ("\nERROR ->Linea %d: %s", yylineno, s);
+	numErrores++;
 }
 
 

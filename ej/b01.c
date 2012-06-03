@@ -9,10 +9,10 @@ int main()
   c = b[2];                     // Asignacion no valida
 
   for (a=0; a=20; a++) b[a]=0;  // Expresion no es de tipo logico
-	c = int;
-	c = int;
+
   c[a] = 1 ;                    // La variable no es un array
   a = b.c1;                     // La variable no es un registro
   a = (a == 2);                 // La expresion no es entera
+
 }
 
