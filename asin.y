@@ -486,7 +486,7 @@ instruccionSalto: RETURN_ expresion PUNTOYCOMA_
 		
 		INF inf = obtenerInfoFuncion(-1);
 		if($2.tipo != inf.tipo)	{
-			printf("\nLOG func: %s tipo: %d expr: %d", inf.nombre, inf.tipo, $2.tipo);
+//			printf("\nLOG func: %s tipo: %d expr: %d", inf.nombre, inf.tipo, $2.tipo);
 			yyerror("Tipo devuelto por el return es incorrecto.");
 		}
 		//if(strcmp("main",inf.nombre) != 0 ){ // No es main
@@ -531,15 +531,15 @@ expresion: expresionIgualdad
 			switch($2){
 				case MASASIG: // id = id + exp
 					emite(ESUM, id_arg, exp_arg, id_arg);
-					printf("\nemite asignacion de variable %s+=%d", $1, id_arg.val.i);
+				//	printf("\nemite asignacion de variable %s+=%d", $1, id_arg.val.i);
 					break;
 				case MENOSASIG:
 					emite(EDIF, id_arg, exp_arg, id_arg);
-					printf("\nemite asignacion de variable %s-=%d", $1, id_arg.val.i);
+				//	printf("\nemite asignacion de variable %s-=%d", $1, id_arg.val.i);
 					break;
 				case ASIG:
 					emite(EASIG, exp_arg, crArgNulo(), id_arg);
-					printf("\nemite asignacion de variable %s=%d", $1, id_arg.val.i);
+				//	printf("\nemite asignacion de variable %s=%d", $1, id_arg.val.i);
 					break;
 
 			}
@@ -886,7 +886,7 @@ expresionSufija: ID_ CORABR_ expresion CORCER_
 	  			yyerror("\n variable NO declarada todavia, primer uso");
 	  			$$.tipo = T_ERROR;
 	  		} else {
-	  			printf("\nLOG var %s desp %d nivel %d", $1, id.nivel, id.desp);
+	  	//		printf("\nLOG var %s desp %d nivel %d", $1, id.nivel, id.desp);
 	  			$$.exp = crArgPosicion(id.nivel, id.desp);
 	  			$$.tipo = id.tipo; 
 	  		}
