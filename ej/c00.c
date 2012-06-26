@@ -15,7 +15,7 @@ int main()
 
   i=0; n=lee();
   for(;n > 0;) {
-//    int i;
+    int i;
     a[0]=n; 
     for (i=1; i < 10; i++){ a[i]=a[i-1]+n;
     print(a[i]);}

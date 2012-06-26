@@ -594,7 +594,7 @@ expresion: expresionIgualdad
 			
 			switch($5){
 				case MASASIG: //leo el elemento del array
-			emite(EAV, id_arg, indice, elem);
+					emite(EAV, id_arg, indice, elem);
 					emite(ESUM, valor, elem, elem);
 					break;
 				case MENOSASIG://leo el elemento del array
@@ -633,7 +633,23 @@ expresion: expresionIgualdad
 				$$.tipo = T_ERROR;			
 			}else{
 				TIPO_ARG campo_arg = crArgPosicion(id.nivel, id.desp + campo.desp);
-				emite(ASIG, exp_arg, crArgNulo(), campo_arg);
+				TIPO_ARG temp = crArgPosicion(nivel, creaVarTemp());  
+				
+				switch($4){
+					case MASASIG: //leo el elemento del registro
+						emite(EASIG, campo_arg, crArgNulo(), temp);
+						emite(ESUM, exp_arg, temp, campo_arg);
+						break;
+					case MENOSASIG://leo el elemento del registro
+						emite(EASIG, campo_arg, crArgNulo(), temp);
+						emite(EDIF, exp_arg, temp, campo_arg);
+						break;
+					case ASIG:
+						emite(EASIG, exp_arg, crArgNulo(), campo_arg);
+						break;
+				}
+				
+
 				$$.exp = campo_arg;
 				$$.tipo = campo.tipo;
 			}

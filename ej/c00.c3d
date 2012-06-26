@@ -23,38 +23,36 @@
  22 EASIG     	i: 1  ,  	,  p: (1,2)  
  23 EMAY      	p: (1,0)  ,  i: 0  ,  e: 25  
  24 EASIG     	i: 0  ,  	,  p: (1,2)  
- 25 EIGUAL    	p: (1,2)  ,  i: 0  ,  e: 55  
+ 25 EIGUAL    	p: (1,2)  ,  i: 0  ,  e: 53  
  26 GOTOS     		,  	,  e: 28  
  27 GOTOS     		,  	,  e: 22  
- 28 EAV       	p: (0,1)  ,  i: 0  ,  p: (1,3)  
- 29 EASIG     	p: (1,0)  ,  	,  p: (1,3)  
- 30 EVA       	p: (0,1)  ,  i: 0  ,  p: (1,3)  
- 31 EASIG     	i: 1  ,  	,  p: (0,0)  
- 32 EASIG     	i: 1  ,  	,  p: (1,4)  
- 33 EMEN      	p: (0,0)  ,  i: 10  ,  e: 35  
- 34 EASIG     	i: 0  ,  	,  p: (1,4)  
- 35 EIGUAL    	p: (1,4)  ,  i: 0  ,  e: 49  
- 36 GOTOS     		,  	,  e: 40  
- 37 EASIG     	p: (0,0)  ,  	,  p: (1,5)  
- 38 ESUM      	p: (0,0)  ,  i: 1  ,  p: (0,0)  
- 39 GOTOS     		,  	,  e: 32  
- 40 EDIF      	p: (0,0)  ,  i: 1  ,  p: (1,6)  
- 41 EAV       	p: (0,1)  ,  p: (1,6)  ,  p: (1,7)  
- 42 ESUM      	p: (1,7)  ,  p: (1,0)  ,  p: (1,8)  
- 43 EAV       	p: (0,1)  ,  p: (0,0)  ,  p: (1,9)  
- 44 EASIG     	p: (1,8)  ,  	,  p: (1,9)  
- 45 EVA       	p: (0,1)  ,  p: (0,0)  ,  p: (1,9)  
- 46 EAV       	p: (0,1)  ,  p: (0,0)  ,  p: (1,10)  
- 47 EWRITE    		,  	,  p: (1,10)  
- 48 GOTOS     		,  	,  e: 37  
- 49 EPUSH     		,  	,  i: 0  
- 50 CALL      		,  	,  e: 2  
- 51 DECTOP    		,  	,  i: 0  
- 52 EPOP      		,  	,  p: (1,11)  
- 53 EASIG     	p: (1,11)  ,  	,  p: (1,0)  
- 54 GOTOS     		,  	,  e: 27  
- 55 EDIF      	p: (0,0)  ,  i: 1  ,  p: (1,12)  
- 56 EWRITE    		,  	,  p: (1,12)  
- 57 TOPFP     		,  	,  	
- 58 FPPOP     		,  	,  	
- 59 FIN       		,  	,  	
+ 28 EASIG     	p: (1,0)  ,  	,  p: (1,3)  
+ 29 EVA       	p: (0,1)  ,  i: 0  ,  p: (1,3)  
+ 30 EASIG     	i: 1  ,  	,  p: (0,0)  
+ 31 EASIG     	i: 1  ,  	,  p: (1,4)  
+ 32 EMEN      	p: (0,0)  ,  i: 10  ,  e: 34  
+ 33 EASIG     	i: 0  ,  	,  p: (1,4)  
+ 34 EIGUAL    	p: (1,4)  ,  i: 0  ,  e: 47  
+ 35 GOTOS     		,  	,  e: 39  
+ 36 EASIG     	p: (0,0)  ,  	,  p: (1,5)  
+ 37 ESUM      	p: (0,0)  ,  i: 1  ,  p: (0,0)  
+ 38 GOTOS     		,  	,  e: 31  
+ 39 EDIF      	p: (0,0)  ,  i: 1  ,  p: (1,6)  
+ 40 EAV       	p: (0,1)  ,  p: (1,6)  ,  p: (1,7)  
+ 41 ESUM      	p: (1,7)  ,  p: (1,0)  ,  p: (1,8)  
+ 42 EASIG     	p: (1,8)  ,  	,  p: (1,9)  
+ 43 EVA       	p: (0,1)  ,  p: (0,0)  ,  p: (1,9)  
+ 44 EAV       	p: (0,1)  ,  p: (0,0)  ,  p: (1,10)  
+ 45 EWRITE    		,  	,  p: (1,10)  
+ 46 GOTOS     		,  	,  e: 36  
+ 47 EPUSH     		,  	,  i: 0  
+ 48 CALL      		,  	,  e: 2  
+ 49 DECTOP    		,  	,  i: 0  
+ 50 EPOP      		,  	,  p: (1,11)  
+ 51 EASIG     	p: (1,11)  ,  	,  p: (1,0)  
+ 52 GOTOS     		,  	,  e: 27  
+ 53 EDIF      	p: (0,0)  ,  i: 1  ,  p: (1,12)  
+ 54 EWRITE    		,  	,  p: (1,12)  
+ 55 TOPFP     		,  	,  	
+ 56 FPPOP     		,  	,  	
+ 57 FIN       		,  	,  	

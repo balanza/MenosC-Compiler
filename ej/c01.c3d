@@ -12,16 +12,16 @@
  11 RET       		,  	,  	
  12 PUSHFP    		,  	,  	
  13 FPTOP     		,  	,  	
- 14 INCTOP    		,  	,  i: 3  
- 15 EMEN      	i: 1  ,  	,  p: (0,0)  
+ 14 INCTOP    		,  	,  i: 8  
+ 15 EASIG     	i: 1  ,  	,  p: (0,0)  
  16 EWRITE    		,  	,  p: (0,0)  
- 17 EMEN      	i: 2  ,  	,  p: (0,1)  
+ 17 EASIG     	i: 2  ,  	,  p: (0,1)  
  18 EWRITE    		,  	,  p: (0,1)  
- 19 EMEN      	i: 3  ,  	,  p: (0,2)  
+ 19 EASIG     	i: 3  ,  	,  p: (0,2)  
  20 EWRITE    		,  	,  p: (0,2)  
- 21 ESUM      	p: (0,0)  ,  p: (0,1)  ,  p: (1,0)  
- 22 ESUM      	p: (1,0)  ,  p: (0,2)  ,  p: (1,1)  
- 23 EMEN      	p: (1,1)  ,  	,  p: (0,2)  
+ 21 ESUM      	p: (0,0)  ,  p: (0,1)  ,  p: (1,3)  
+ 22 ESUM      	p: (1,3)  ,  p: (0,2)  ,  p: (1,4)  
+ 23 EASIG     	p: (1,4)  ,  	,  p: (0,2)  
  24 EWRITE    		,  	,  p: (0,2)  
  25 EPUSH     		,  	,  i: 0  
  26 EPUSH     		,  	,  p: (0,2)  
@@ -29,9 +29,10 @@
  28 EPUSH     		,  	,  p: (0,0)  
  29 CALL      		,  	,  e: 2  
  30 DECTOP    		,  	,  i: 3  
- 31 EPOP      		,  	,  p: (1,2)  
- 32 EMEN      	p: (1,2)  ,  	,  p: (0,2)  
- 33 EWRITE    		,  	,  p: (0,2)  
- 34 TOPFP     		,  	,  	
- 35 FPPOP     		,  	,  	
- 36 FIN       		,  	,  	
+ 31 EPOP      		,  	,  p: (1,6)  
+ 32 EASIG     	p: (0,2)  ,  	,  p: (1,7)  
+ 33 ESUM      	p: (1,6)  ,  p: (1,7)  ,  p: (0,2)  
+ 34 EWRITE    		,  	,  p: (0,2)  
+ 35 TOPFP     		,  	,  	
+ 36 FPPOP     		,  	,  	
+ 37 FIN       		,  	,  	
