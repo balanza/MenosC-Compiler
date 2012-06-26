@@ -510,12 +510,12 @@ static const yytype_uint16 yyrline[] =
      171,   177,   184,   201,   216,   258,   257,   308,   311,   316,
      333,   332,   355,   361,   365,   379,   380,   383,   383,   392,
      393,   394,   395,   396,   398,   402,   405,   404,   420,   419,
-     426,   438,   425,   450,   455,   469,   449,   484,   487,   492,
-     522,   526,   570,   606,   633,   637,   667,   671,   709,   713,
-     735,   739,   760,   764,   778,   808,   828,   851,   856,   855,
-     889,   893,   907,   914,   917,   924,   930,   936,   940,   944,
-     949,   953,   958,   962,   966,   970,   975,   979,   984,   988,
-     993,   997,  1002,  1006
+     426,   438,   425,   450,   455,   475,   449,   490,   493,   498,
+     528,   532,   576,   614,   643,   647,   677,   681,   719,   723,
+     745,   749,   770,   774,   788,   818,   838,   861,   890,   889,
+     923,   927,   941,   950,   953,   960,   966,   972,   976,   980,
+     985,   989,   994,   998,  1002,  1006,  1011,  1015,  1020,  1024,
+    1029,  1033,  1038,  1042
 };
 #endif
 
@@ -535,7 +535,7 @@ static const char *const yytname[] =
   "listaParametrosFormales", "$@3", "bloque", "declaracionVariableLocal",
   "listaInstrucciones", "instruccion", "$@4", "instruccionExpresion",
   "instruccionEntradaSalida", "$@5", "$@6", "instruccionSeleccion", "@7",
-  "@8", "instruccionIteraccion", "@9", "@10", "@11", "expresionOpcional",
+  "@8", "instruccionIteraccion", "@9", "@10", "$@11", "expresionOpcional",
   "instruccionSalto", "expresion", "expresionIgualdad",
   "expresionRelacional", "expresionAditiva", "expresionMultiplicativa",
   "expresionUnaria", "expresionSufija", "$@12", "parametrosActuales",
@@ -1570,7 +1570,7 @@ yyreduce:
 			yyerror("ni un main en todo el programa");
 		}
 		
-	//	mostrarTDS(nivel);
+		mostrarTDS(nivel);
 		
 		descargaContexto(nivel);
 		
@@ -1607,7 +1607,7 @@ yyreduce:
 			dvar += (yyvsp[(1) - (1)].tdef).talla; // update shift
 		}
 		
-		
+		mostrarTDS(nivel);
 		(yyval.tdef).talla = (yyvsp[(1) - (1)].tdef).talla;
 		
 	;}
@@ -1928,7 +1928,7 @@ yyreduce:
 			dvar += (yyvsp[(2) - (2)].tdef).talla; // update shift
 		}
 		
-		
+				mostrarTDS(nivel);
 		(yyval.tdef).talla = dvar;
 		
 	;}
@@ -2050,22 +2050,28 @@ yyreduce:
 		
 		//instruccion para salir del bucle
 		(yyvsp[(6) - (7)].tdef).instr1 = creaLans(si);
+				
+		
 		emite(EIGUAL, (yyvsp[(6) - (7)].tdef).exp, crArgEntero(0), crArgNulo());
 		//instruccion para volver a las instrucciones cuerpo del bucle
 		(yyvsp[(6) - (7)].tdef).instr2 = creaLans(si);
-		emite(GOTOS,crArgNulo(),crArgNulo(), crArgNulo());	
+		emite(GOTOS,crArgNulo(),crArgNulo(), crArgNulo());	//inicio de la funcion de incremento
+		
+		//instruccion para salir del bucle		
+		(yyval.tdef).instr2 = si;
+
 	;}
     break;
 
   case 45:
 
 /* Line 1455 of yacc.c  */
-#line 469 "asin.y"
+#line 475 "asin.y"
     {
 		//inicio de la funcion de incremento
 		(yyvsp[(8) - (10)].tdef).instr1 = si;
 		//vuelve a ejecutar la condiccion de entrada al bucle
-		emite(GOTOS,crArgNulo(),crArgNulo(), crArgEtiqueta((yyval.tdef).instr1));
+		emite(GOTOS,crArgNulo(),crArgNulo(), crArgEtiqueta((yyvsp[(5) - (10)].tdef).instr1));
 		completaLans((yyvsp[(6) - (10)].tdef).instr2, crArgEtiqueta(si));
 	;}
     break;
@@ -2073,9 +2079,9 @@ yyreduce:
   case 46:
 
 /* Line 1455 of yacc.c  */
-#line 477 "asin.y"
+#line 483 "asin.y"
     {
-		emite(GOTOS,crArgNulo(),crArgNulo(), crArgEtiqueta((yyvsp[(8) - (12)].tdef).instr1));
+		emite(GOTOS,crArgNulo(),crArgNulo(), crArgEtiqueta((yyvsp[(8) - (12)].tdef).instr2));
 		
 		completaLans((yyvsp[(6) - (12)].tdef).instr1, crArgEtiqueta(si));
 	;}
@@ -2084,7 +2090,7 @@ yyreduce:
   case 47:
 
 /* Line 1455 of yacc.c  */
-#line 484 "asin.y"
+#line 490 "asin.y"
     {
 		
 	;}
@@ -2093,7 +2099,7 @@ yyreduce:
   case 48:
 
 /* Line 1455 of yacc.c  */
-#line 488 "asin.y"
+#line 494 "asin.y"
     {
   		(yyval.tdef) = (yyvsp[(1) - (1)].tdef);
   	;}
@@ -2102,7 +2108,7 @@ yyreduce:
   case 49:
 
 /* Line 1455 of yacc.c  */
-#line 493 "asin.y"
+#line 499 "asin.y"
     {
 		//enciende el flag de existencian de return en la funcion
 		hayReturn = 1;
@@ -2135,7 +2141,7 @@ yyreduce:
   case 50:
 
 /* Line 1455 of yacc.c  */
-#line 523 "asin.y"
+#line 529 "asin.y"
     {
 		(yyval.tdef) = (yyvsp[(1) - (1)].tdef);
 	;}
@@ -2144,7 +2150,7 @@ yyreduce:
   case 51:
 
 /* Line 1455 of yacc.c  */
-#line 527 "asin.y"
+#line 533 "asin.y"
     {
   		
   		SIMB id;
@@ -2193,7 +2199,7 @@ yyreduce:
   case 52:
 
 /* Line 1455 of yacc.c  */
-#line 571 "asin.y"
+#line 577 "asin.y"
     {
 		SIMB id;
 		
@@ -2210,17 +2216,19 @@ yyreduce:
 			TIPO_ARG elem = crArgPosicion(nivel, creaVarTemp()); //variable por el valor del elemento id[expresion]
 			TIPO_ARG id_arg = crArgPosicion(id.nivel, id.desp);
 			
-			//leo el elemento del array
-			emite(EAV, id_arg, indice, elem);
+			
 			
 			switch((yyvsp[(5) - (6)].operador)){
-				case MASASIG: 
+				case MASASIG: //leo el elemento del array
+			emite(EAV, id_arg, indice, elem);
 					emite(ESUM, valor, elem, elem);
 					break;
-				case MENOSASIG:
+				case MENOSASIG://leo el elemento del array
+			emite(EAV, id_arg, indice, elem);
 					emite(EDIF, elem, valor, elem);
 					break;
 				case ASIG:
+					emite(EASIG, valor, crArgNulo(), elem);
 					break;
 			}			
 
@@ -2234,7 +2242,7 @@ yyreduce:
   case 53:
 
 /* Line 1455 of yacc.c  */
-#line 607 "asin.y"
+#line 615 "asin.y"
     {
 		SIMB id;
 		REG campo;		
@@ -2249,7 +2257,9 @@ yyreduce:
 			if(campo.tipo==T_ERROR){
 				yyerror("el campo no es parte de la struct");	
 				(yyval.tdef).tipo = T_ERROR;
-			}else if(campo.tipo!=exp_arg.tipo){
+			}else if((yyvsp[(5) - (5)].tdef).tipo!=1 && campo.tipo!=exp_arg.tipo){
+			//	printf("\nLOG: exp  tipo: %d exp.tipo: %d exp.val.i: %d", $5.tipo, $5.exp.tipo, $5.exp.val.i);
+			//	printf("\nLOG: registro: %s campo: %s tipo esxpresion: %d tipo campo: %d", $1, $3, exp_arg.tipo, campo.tipo);
 				yyerror("se trata de asignar un valor de un tipo incorrecto a un campo");	
 				(yyval.tdef).tipo = T_ERROR;			
 			}else{
@@ -2265,7 +2275,7 @@ yyreduce:
   case 54:
 
 /* Line 1455 of yacc.c  */
-#line 634 "asin.y"
+#line 644 "asin.y"
     {
   		(yyval.tdef) = (yyvsp[(1) - (1)].tdef);
   	;}
@@ -2274,7 +2284,7 @@ yyreduce:
   case 55:
 
 /* Line 1455 of yacc.c  */
-#line 638 "asin.y"
+#line 648 "asin.y"
     {
    		int oprel;
   		
@@ -2308,7 +2318,7 @@ yyreduce:
   case 56:
 
 /* Line 1455 of yacc.c  */
-#line 668 "asin.y"
+#line 678 "asin.y"
     {
 		(yyval.tdef) = (yyvsp[(1) - (1)].tdef);
 	;}
@@ -2317,7 +2327,7 @@ yyreduce:
   case 57:
 
 /* Line 1455 of yacc.c  */
-#line 672 "asin.y"
+#line 682 "asin.y"
     {
   		int oprel;
   		
@@ -2359,7 +2369,7 @@ yyreduce:
   case 58:
 
 /* Line 1455 of yacc.c  */
-#line 710 "asin.y"
+#line 720 "asin.y"
     {
 		(yyval.tdef) = (yyvsp[(1) - (1)].tdef);
 	;}
@@ -2368,7 +2378,7 @@ yyreduce:
   case 59:
 
 /* Line 1455 of yacc.c  */
-#line 714 "asin.y"
+#line 724 "asin.y"
     {
   		TIPO_ARG exp1_arg = (yyvsp[(1) - (3)].tdef).exp;
   		TIPO_ARG exp2_arg = (yyvsp[(3) - (3)].tdef).exp;
@@ -2394,7 +2404,7 @@ yyreduce:
   case 60:
 
 /* Line 1455 of yacc.c  */
-#line 736 "asin.y"
+#line 746 "asin.y"
     {
 		(yyval.tdef) = (yyvsp[(1) - (1)].tdef);
 	;}
@@ -2403,7 +2413,7 @@ yyreduce:
   case 61:
 
 /* Line 1455 of yacc.c  */
-#line 740 "asin.y"
+#line 750 "asin.y"
     {
   		TIPO_ARG exp1_arg = (yyvsp[(1) - (3)].tdef).exp;
   		TIPO_ARG exp2_arg = (yyvsp[(3) - (3)].tdef).exp;
@@ -2428,7 +2438,7 @@ yyreduce:
   case 62:
 
 /* Line 1455 of yacc.c  */
-#line 761 "asin.y"
+#line 771 "asin.y"
     {
 		(yyval.tdef) = (yyvsp[(1) - (1)].tdef);
 	;}
@@ -2437,7 +2447,7 @@ yyreduce:
   case 63:
 
 /* Line 1455 of yacc.c  */
-#line 765 "asin.y"
+#line 775 "asin.y"
     {
   		TIPO_ARG exp_arg = (yyvsp[(2) - (2)].tdef).exp;
   		
@@ -2456,7 +2466,7 @@ yyreduce:
   case 64:
 
 /* Line 1455 of yacc.c  */
-#line 779 "asin.y"
+#line 789 "asin.y"
     {
   		 		
   		SIMB sim; 
@@ -2490,7 +2500,7 @@ yyreduce:
   case 65:
 
 /* Line 1455 of yacc.c  */
-#line 809 "asin.y"
+#line 819 "asin.y"
     {
 		SIMB id;
 		id = obtenerSimbolo((yyvsp[(1) - (4)].ident));
@@ -2515,7 +2525,7 @@ yyreduce:
   case 66:
 
 /* Line 1455 of yacc.c  */
-#line 829 "asin.y"
+#line 839 "asin.y"
     {
 		SIMB id;
 		REG campo;		
@@ -2543,16 +2553,40 @@ yyreduce:
   case 67:
 
 /* Line 1455 of yacc.c  */
-#line 852 "asin.y"
+#line 862 "asin.y"
     {
+		SIMB sim; 
+  		TIPO_ARG res;
+  		  		
+		sim = obtenerSimbolo((yyvsp[(1) - (2)].ident));
+		/* comprobaciones semanticas */
+		res = crArgPosicion(sim.nivel, sim.desp);
+		(yyval.tdef).exp = crArgPosicion(nivel, creaVarTemp());		
 		(yyval.tdef).tipo = T_ENTERO;
+		/************************************** INCREMENTA o DECREMENTA 1 */
+		
+		int operador;
+		if((yyvsp[(2) - (2)].operador)==MASMAS){
+			operador = ESUM;
+		}else{
+			operador = EDIF;
+		}
+		
+		/***************************************************** Asignacion */
+		emite(EASIG, res, crArgNulo(), (yyval.tdef).exp);
+		
+		emite(operador, res, crArgEntero(1), res);
+		
+		
+		
+  		(yyval.tdef).tipo = sim.tipo;
 	;}
     break;
 
   case 68:
 
 /* Line 1455 of yacc.c  */
-#line 856 "asin.y"
+#line 890 "asin.y"
     {
   		//espacio reservado para el valor de retorno
   		emite(EPUSH, crArgNulo(), crArgNulo(), crArgEntero(0));
@@ -2562,7 +2596,7 @@ yyreduce:
   case 69:
 
 /* Line 1455 of yacc.c  */
-#line 861 "asin.y"
+#line 895 "asin.y"
     {
 		//obtener simbolo de la funcion desde la tabla de simbolos
 		SIMB id = obtenerSimbolo((yyvsp[(1) - (5)].ident)); 
@@ -2596,7 +2630,7 @@ yyreduce:
   case 70:
 
 /* Line 1455 of yacc.c  */
-#line 890 "asin.y"
+#line 924 "asin.y"
     {
 		(yyval.tdef) = (yyvsp[(2) - (3)].tdef);
 	;}
@@ -2605,7 +2639,7 @@ yyreduce:
   case 71:
 
 /* Line 1455 of yacc.c  */
-#line 893 "asin.y"
+#line 927 "asin.y"
     {
   			SIMB id = obtenerSimbolo((yyvsp[(1) - (1)].ident));
   			
@@ -2625,9 +2659,11 @@ yyreduce:
   case 72:
 
 /* Line 1455 of yacc.c  */
-#line 908 "asin.y"
+#line 942 "asin.y"
     {
+  		
   		(yyval.tdef).exp = crArgEntero((yyvsp[(1) - (1)].cent));
+  		printf("\nCTE tipo: %d valor %d", (yyval.tdef).exp.tipo, (yyval.tdef).exp.val.i);
   		(yyval.tdef).tipo = T_ENTERO;
   	;}
     break;
@@ -2635,7 +2671,7 @@ yyreduce:
   case 73:
 
 /* Line 1455 of yacc.c  */
-#line 914 "asin.y"
+#line 950 "asin.y"
     {
 		(yyval.tdef).ref = insertaInfoDominio(-1,T_VACIO);
 	;}
@@ -2644,7 +2680,7 @@ yyreduce:
   case 74:
 
 /* Line 1455 of yacc.c  */
-#line 918 "asin.y"
+#line 954 "asin.y"
     {
 		if((yyvsp[(1) - (1)].tdef).tipo != T_ERROR){
 			(yyval.tdef).ref = (yyvsp[(1) - (1)].tdef).ref;
@@ -2655,7 +2691,7 @@ yyreduce:
   case 75:
 
 /* Line 1455 of yacc.c  */
-#line 925 "asin.y"
+#line 961 "asin.y"
     {
 		
 		(yyval.tdef).ref = insertaInfoDominio(-1, (yyvsp[(1) - (1)].tdef).tipo);
@@ -2666,7 +2702,7 @@ yyreduce:
   case 76:
 
 /* Line 1455 of yacc.c  */
-#line 931 "asin.y"
+#line 967 "asin.y"
     {
 		(yyval.tdef).ref = insertaInfoDominio((yyvsp[(3) - (3)].tdef).ref, (yyvsp[(1) - (3)].tdef).tipo);
 		emite(EPUSH, crArgNulo(), crArgNulo(), (yyvsp[(1) - (3)].tdef).exp);
@@ -2676,7 +2712,7 @@ yyreduce:
   case 77:
 
 /* Line 1455 of yacc.c  */
-#line 937 "asin.y"
+#line 973 "asin.y"
     {
 		(yyval.operador) = ASIG;
 	;}
@@ -2685,7 +2721,7 @@ yyreduce:
   case 78:
 
 /* Line 1455 of yacc.c  */
-#line 941 "asin.y"
+#line 977 "asin.y"
     {
 		(yyval.operador) = MASASIG;
 	;}
@@ -2694,7 +2730,7 @@ yyreduce:
   case 79:
 
 /* Line 1455 of yacc.c  */
-#line 945 "asin.y"
+#line 981 "asin.y"
     {
 		(yyval.operador) = MENOSASIG;
 	;}
@@ -2703,7 +2739,7 @@ yyreduce:
   case 80:
 
 /* Line 1455 of yacc.c  */
-#line 950 "asin.y"
+#line 986 "asin.y"
     {
 		(yyval.operador) = IGUAL;
 	;}
@@ -2712,7 +2748,7 @@ yyreduce:
   case 81:
 
 /* Line 1455 of yacc.c  */
-#line 954 "asin.y"
+#line 990 "asin.y"
     {
 		(yyval.operador) = DISTINTO;
 	;}
@@ -2721,7 +2757,7 @@ yyreduce:
   case 82:
 
 /* Line 1455 of yacc.c  */
-#line 959 "asin.y"
+#line 995 "asin.y"
     {
 		(yyval.operador) = MAYOR;
 	;}
@@ -2730,7 +2766,7 @@ yyreduce:
   case 83:
 
 /* Line 1455 of yacc.c  */
-#line 963 "asin.y"
+#line 999 "asin.y"
     {
 		(yyval.operador) = MAYORIG;
 	;}
@@ -2739,7 +2775,7 @@ yyreduce:
   case 84:
 
 /* Line 1455 of yacc.c  */
-#line 967 "asin.y"
+#line 1003 "asin.y"
     {
 		(yyval.operador) = MENOR;
 	;}
@@ -2748,7 +2784,7 @@ yyreduce:
   case 85:
 
 /* Line 1455 of yacc.c  */
-#line 971 "asin.y"
+#line 1007 "asin.y"
     {
 		(yyval.operador) = MENORIG;
 	;}
@@ -2757,7 +2793,7 @@ yyreduce:
   case 86:
 
 /* Line 1455 of yacc.c  */
-#line 976 "asin.y"
+#line 1012 "asin.y"
     {
 		(yyval.operador) = MAS;
 	;}
@@ -2766,7 +2802,7 @@ yyreduce:
   case 87:
 
 /* Line 1455 of yacc.c  */
-#line 980 "asin.y"
+#line 1016 "asin.y"
     {
 		(yyval.operador) = MENOS;
 	;}
@@ -2775,7 +2811,7 @@ yyreduce:
   case 88:
 
 /* Line 1455 of yacc.c  */
-#line 985 "asin.y"
+#line 1021 "asin.y"
     {
 		(yyval.operador) = POR;
 	;}
@@ -2784,7 +2820,7 @@ yyreduce:
   case 89:
 
 /* Line 1455 of yacc.c  */
-#line 989 "asin.y"
+#line 1025 "asin.y"
     {
 		(yyval.operador) = DIV;
 	;}
@@ -2793,7 +2829,7 @@ yyreduce:
   case 90:
 
 /* Line 1455 of yacc.c  */
-#line 994 "asin.y"
+#line 1030 "asin.y"
     {
 		(yyval.operador) = MASMAS;
 	;}
@@ -2802,7 +2838,7 @@ yyreduce:
   case 91:
 
 /* Line 1455 of yacc.c  */
-#line 998 "asin.y"
+#line 1034 "asin.y"
     {
 		(yyval.operador) = MENOSMENOS;
 	;}
@@ -2811,7 +2847,7 @@ yyreduce:
   case 92:
 
 /* Line 1455 of yacc.c  */
-#line 1003 "asin.y"
+#line 1039 "asin.y"
     {
 		(yyval.operador) = MAS;
 	;}
@@ -2820,7 +2856,7 @@ yyreduce:
   case 93:
 
 /* Line 1455 of yacc.c  */
-#line 1007 "asin.y"
+#line 1043 "asin.y"
     {
 		(yyval.operador) = MENOS;
 	;}
@@ -2829,7 +2865,7 @@ yyreduce:
 
 
 /* Line 1455 of yacc.c  */
-#line 2833 "asin.c"
+#line 2869 "asin.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -3041,7 +3077,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 1011 "asin.y"
+#line 1047 "asin.y"
 
 
 

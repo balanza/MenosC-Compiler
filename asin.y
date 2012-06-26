@@ -105,7 +105,7 @@ secuenciaDeclaraciones
 			yyerror("ni un main en todo el programa");
 		}
 		
-	//	mostrarTDS(nivel);
+		mostrarTDS(nivel);
 		
 		descargaContexto(nivel);
 		
@@ -129,7 +129,7 @@ declaracion: declaracionVariable
 			dvar += $1.talla; // update shift
 		}
 		
-		
+		mostrarTDS(nivel);
 		$$.talla = $1.talla;
 		
 	}
@@ -371,7 +371,7 @@ declaracionVariableLocal:
 			dvar += $2.talla; // update shift
 		}
 		
-		
+				mostrarTDS(nivel);
 		$$.talla = dvar;
 		
 	}
@@ -460,22 +460,28 @@ instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_
 		
 		//instruccion para salir del bucle
 		$6.instr1 = creaLans(si);
+				
+		
 		emite(EIGUAL, $<tdef>6.exp, crArgEntero(0), crArgNulo());
 		//instruccion para volver a las instrucciones cuerpo del bucle
 		$6.instr2 = creaLans(si);
-		emite(GOTOS,crArgNulo(),crArgNulo(), crArgNulo());	
+		emite(GOTOS,crArgNulo(),crArgNulo(), crArgNulo());	//inicio de la funcion de incremento
+		
+		//instruccion para salir del bucle		
+		$<tdef>$.instr2 = si;
+
 	}
 	expresionOpcional PARCER_ 
 	{
 		//inicio de la funcion de incremento
 		$<tdef>8.instr1 = si;
 		//vuelve a ejecutar la condiccion de entrada al bucle
-		emite(GOTOS,crArgNulo(),crArgNulo(), crArgEtiqueta($<tdef>$.instr1));
+		emite(GOTOS,crArgNulo(),crArgNulo(), crArgEtiqueta($<tdef>5.instr1));
 		completaLans($<tdef>6.instr2, crArgEtiqueta(si));
 	}
 	instruccion
 	{
-		emite(GOTOS,crArgNulo(),crArgNulo(), crArgEtiqueta($<tdef>8.instr1));
+		emite(GOTOS,crArgNulo(),crArgNulo(), crArgEtiqueta($<tdef>8.instr2));
 		
 		completaLans($<tdef>6.instr1, crArgEtiqueta(si));
 	}
@@ -584,17 +590,19 @@ expresion: expresionIgualdad
 			TIPO_ARG elem = crArgPosicion(nivel, creaVarTemp()); //variable por el valor del elemento id[expresion]
 			TIPO_ARG id_arg = crArgPosicion(id.nivel, id.desp);
 			
-			//leo el elemento del array
-			emite(EAV, id_arg, indice, elem);
+			
 			
 			switch($5){
-				case MASASIG: 
+				case MASASIG: //leo el elemento del array
+			emite(EAV, id_arg, indice, elem);
 					emite(ESUM, valor, elem, elem);
 					break;
-				case MENOSASIG:
+				case MENOSASIG://leo el elemento del array
+			emite(EAV, id_arg, indice, elem);
 					emite(EDIF, elem, valor, elem);
 					break;
 				case ASIG:
+					emite(EASIG, valor, crArgNulo(), elem);
 					break;
 			}			
 
@@ -618,7 +626,9 @@ expresion: expresionIgualdad
 			if(campo.tipo==T_ERROR){
 				yyerror("el campo no es parte de la struct");	
 				$$.tipo = T_ERROR;
-			}else if(campo.tipo!=exp_arg.tipo){
+			}else if($5.tipo!=1 && campo.tipo!=exp_arg.tipo){
+			//	printf("\nLOG: exp  tipo: %d exp.tipo: %d exp.val.i: %d", $5.tipo, $5.exp.tipo, $5.exp.val.i);
+			//	printf("\nLOG: registro: %s campo: %s tipo esxpresion: %d tipo campo: %d", $1, $3, exp_arg.tipo, campo.tipo);
 				yyerror("se trata de asignar un valor de un tipo incorrecto a un campo");	
 				$$.tipo = T_ERROR;			
 			}else{
@@ -850,7 +860,31 @@ expresionSufija: ID_ CORABR_ expresion CORCER_
   	}
   | ID_ operadorIncremento
 	{
+		SIMB sim; 
+  		TIPO_ARG res;
+  		  		
+		sim = obtenerSimbolo($1);
+		/* comprobaciones semanticas */
+		res = crArgPosicion(sim.nivel, sim.desp);
+		$$.exp = crArgPosicion(nivel, creaVarTemp());		
 		$$.tipo = T_ENTERO;
+		/************************************** INCREMENTA o DECREMENTA 1 */
+		
+		int operador;
+		if($2==MASMAS){
+			operador = ESUM;
+		}else{
+			operador = EDIF;
+		}
+		
+		/***************************************************** Asignacion */
+		emite(EASIG, res, crArgNulo(), $$.exp);
+		
+		emite(operador, res, crArgEntero(1), res);
+		
+		
+		
+  		$$.tipo = sim.tipo;
 	} 
   | ID_ 
   	{
@@ -906,7 +940,9 @@ expresionSufija: ID_ CORABR_ expresion CORCER_
   		}
   | CTE_ 
   	{
+  		
   		$$.exp = crArgEntero($1);
+  		printf("\nCTE tipo: %d valor %d", $$.exp.tipo, $$.exp.val.i);
   		$$.tipo = T_ENTERO;
   	}
 ;

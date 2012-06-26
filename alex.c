@@ -832,7 +832,7 @@ case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
 #line 53 "alex.l"
-{yylineno++;}
+{}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP

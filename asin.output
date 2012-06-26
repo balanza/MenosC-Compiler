@@ -74,9 +74,9 @@ Grammar
 
    43 @10: /* empty */
 
-   44 @11: /* empty */
+   44 $@11: /* empty */
 
-   45 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ @9 expresion PUNTOYCOMA_ @10 expresionOpcional PARCER_ @11 instruccion
+   45 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ @9 expresion PUNTOYCOMA_ @10 expresionOpcional PARCER_ $@11 instruccion
 
    46 expresionOpcional: /* empty */
    47                  | expresion
@@ -246,7 +246,7 @@ instruccionIteraccion (63)
     on left: 42, on right: 45
 @10 (65)
     on left: 43, on right: 45
-@11 (66)
+$@11 (66)
     on left: 44, on right: 45
 expresionOpcional (67)
     on left: 46 47, on right: 45
@@ -691,7 +691,7 @@ state 40
 
 state 41
 
-   45 instruccionIteraccion: FOR_ . PARABR_ expresionOpcional PUNTOYCOMA_ @9 expresion PUNTOYCOMA_ @10 expresionOpcional PARCER_ @11 instruccion
+   45 instruccionIteraccion: FOR_ . PARABR_ expresionOpcional PUNTOYCOMA_ @9 expresion PUNTOYCOMA_ @10 expresionOpcional PARCER_ $@11 instruccion
 
     PARABR_  shift, and go to state 72
 
@@ -1016,7 +1016,7 @@ state 71
 
 state 72
 
-   45 instruccionIteraccion: FOR_ PARABR_ . expresionOpcional PUNTOYCOMA_ @9 expresion PUNTOYCOMA_ @10 expresionOpcional PARCER_ @11 instruccion
+   45 instruccionIteraccion: FOR_ PARABR_ . expresionOpcional PUNTOYCOMA_ @9 expresion PUNTOYCOMA_ @10 expresionOpcional PARCER_ $@11 instruccion
 
     PARABR_    shift, and go to state 36
     MAS_       shift, and go to state 43
@@ -1378,7 +1378,7 @@ state 105
 
 state 106
 
-   45 instruccionIteraccion: FOR_ PARABR_ expresionOpcional . PUNTOYCOMA_ @9 expresion PUNTOYCOMA_ @10 expresionOpcional PARCER_ @11 instruccion
+   45 instruccionIteraccion: FOR_ PARABR_ expresionOpcional . PUNTOYCOMA_ @9 expresion PUNTOYCOMA_ @10 expresionOpcional PARCER_ $@11 instruccion
 
     PUNTOYCOMA_  shift, and go to state 124
 
@@ -1582,7 +1582,7 @@ state 123
 
 state 124
 
-   45 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ . @9 expresion PUNTOYCOMA_ @10 expresionOpcional PARCER_ @11 instruccion
+   45 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ . @9 expresion PUNTOYCOMA_ @10 expresionOpcional PARCER_ $@11 instruccion
 
     $default  reduce using rule 42 (@9)
 
@@ -1765,7 +1765,7 @@ state 136
 
 state 137
 
-   45 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ @9 . expresion PUNTOYCOMA_ @10 expresionOpcional PARCER_ @11 instruccion
+   45 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ @9 . expresion PUNTOYCOMA_ @10 expresionOpcional PARCER_ $@11 instruccion
 
     PARABR_    shift, and go to state 36
     MAS_       shift, and go to state 43
@@ -1886,7 +1886,7 @@ state 146
 
 state 147
 
-   45 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ @9 expresion . PUNTOYCOMA_ @10 expresionOpcional PARCER_ @11 instruccion
+   45 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ @9 expresion . PUNTOYCOMA_ @10 expresionOpcional PARCER_ $@11 instruccion
 
     PUNTOYCOMA_  shift, and go to state 151
 
@@ -1914,7 +1914,7 @@ state 150
 
 state 151
 
-   45 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ @9 expresion PUNTOYCOMA_ . @10 expresionOpcional PARCER_ @11 instruccion
+   45 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ @9 expresion PUNTOYCOMA_ . @10 expresionOpcional PARCER_ $@11 instruccion
 
     $default  reduce using rule 43 (@10)
 
@@ -1961,7 +1961,7 @@ state 152
 
 state 153
 
-   45 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ @9 expresion PUNTOYCOMA_ @10 . expresionOpcional PARCER_ @11 instruccion
+   45 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ @9 expresion PUNTOYCOMA_ @10 . expresionOpcional PARCER_ $@11 instruccion
 
     PARABR_    shift, and go to state 36
     MAS_       shift, and go to state 43
@@ -1994,23 +1994,23 @@ state 154
 
 state 155
 
-   45 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ @9 expresion PUNTOYCOMA_ @10 expresionOpcional . PARCER_ @11 instruccion
+   45 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ @9 expresion PUNTOYCOMA_ @10 expresionOpcional . PARCER_ $@11 instruccion
 
     PARCER_  shift, and go to state 156
 
 
 state 156
 
-   45 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ @9 expresion PUNTOYCOMA_ @10 expresionOpcional PARCER_ . @11 instruccion
+   45 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ @9 expresion PUNTOYCOMA_ @10 expresionOpcional PARCER_ . $@11 instruccion
 
-    $default  reduce using rule 44 (@11)
+    $default  reduce using rule 44 ($@11)
 
-    @11  go to state 157
+    $@11  go to state 157
 
 
 state 157
 
-   45 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ @9 expresion PUNTOYCOMA_ @10 expresionOpcional PARCER_ @11 . instruccion
+   45 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ @9 expresion PUNTOYCOMA_ @10 expresionOpcional PARCER_ $@11 . instruccion
 
     PUNTOYCOMA_  shift, and go to state 35
     PARABR_      shift, and go to state 36
@@ -2048,6 +2048,6 @@ state 157
 
 state 158
 
-   45 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ @9 expresion PUNTOYCOMA_ @10 expresionOpcional PARCER_ @11 instruccion .
+   45 instruccionIteraccion: FOR_ PARABR_ expresionOpcional PUNTOYCOMA_ @9 expresion PUNTOYCOMA_ @10 expresionOpcional PARCER_ $@11 instruccion .
 
     $default  reduce using rule 45 (instruccionIteraccion)

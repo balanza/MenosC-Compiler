@@ -1,0 +1,37 @@
+  0 INCTOP    		,  	,  i: 3  
+  1 GOTOS     		,  	,  e: 12  
+  2 PUSHFP    		,  	,  	
+  3 FPTOP     		,  	,  	
+  4 INCTOP    		,  	,  i: 2  
+  5 ESUM      	p: (1,-3)  ,  p: (1,-4)  ,  p: (1,0)  
+  6 ESUM      	p: (1,0)  ,  p: (1,-5)  ,  p: (1,1)  
+  7 EASIG     	p: (1,1)  ,  	,  p: (1,-6)  
+  8 GOTOS     		,  	,  e: 9  
+  9 TOPFP     		,  	,  	
+ 10 FPPOP     		,  	,  	
+ 11 RET       		,  	,  	
+ 12 PUSHFP    		,  	,  	
+ 13 FPTOP     		,  	,  	
+ 14 INCTOP    		,  	,  i: 3  
+ 15 EMEN      	i: 1  ,  	,  p: (0,0)  
+ 16 EWRITE    		,  	,  p: (0,0)  
+ 17 EMEN      	i: 2  ,  	,  p: (0,1)  
+ 18 EWRITE    		,  	,  p: (0,1)  
+ 19 EMEN      	i: 3  ,  	,  p: (0,2)  
+ 20 EWRITE    		,  	,  p: (0,2)  
+ 21 ESUM      	p: (0,0)  ,  p: (0,1)  ,  p: (1,0)  
+ 22 ESUM      	p: (1,0)  ,  p: (0,2)  ,  p: (1,1)  
+ 23 EMEN      	p: (1,1)  ,  	,  p: (0,2)  
+ 24 EWRITE    		,  	,  p: (0,2)  
+ 25 EPUSH     		,  	,  i: 0  
+ 26 EPUSH     		,  	,  p: (0,2)  
+ 27 EPUSH     		,  	,  p: (0,1)  
+ 28 EPUSH     		,  	,  p: (0,0)  
+ 29 CALL      		,  	,  e: 2  
+ 30 DECTOP    		,  	,  i: 3  
+ 31 EPOP      		,  	,  p: (1,2)  
+ 32 EMEN      	p: (1,2)  ,  	,  p: (0,2)  
+ 33 EWRITE    		,  	,  p: (0,2)  
+ 34 TOPFP     		,  	,  	
+ 35 FPPOP     		,  	,  	
+ 36 FIN       		,  	,  	

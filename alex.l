@@ -50,7 +50,7 @@ tab [\x20\t]+
 %%
 
 
-{newline} {yylineno++;}
+{newline} {}
 {tab} {}
 {comm} {} //comentarios
 
